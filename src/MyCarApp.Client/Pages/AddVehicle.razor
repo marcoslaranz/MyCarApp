@@ -1,6 +1,6 @@
 @page "/vehicles/add"
 @inject VehicleService VehicleService
-@inject NavigationManager Nav
+@inject NavigationService NavService
 
 <h3>Add Vehicle</h3>
 
@@ -25,9 +25,11 @@
     private async Task HandleSubmit()
     {
         var success = await VehicleService.CreateVehicleAsync(vehicle);
-        if (success) Nav.NavigateTo("/");
+        if (success) Nav.NavigateTo("");
         else errorMessage = "Failed to save vehicle.";
     }
 
-    private void GoBack() => Nav.NavigateTo("/");
+    
+    private void GoBack() => Nav.NavigateTo("");
+
 }

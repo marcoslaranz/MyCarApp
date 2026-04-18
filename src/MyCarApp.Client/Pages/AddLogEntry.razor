@@ -1,6 +1,6 @@
 @page "/vehicles/{VehicleId:int}/logs/add"
 @inject LogEntryService LogService
-@inject NavigationManager Nav
+@inject NavigationService NavService
 
 <h3>Add Log Entry</h3>
 
@@ -81,9 +81,11 @@ else
     private async Task HandleSubmit()
     {
         var success = await LogService.CreateLogAsync(VehicleId, log);
-        if (success) Nav.NavigateTo($"/vehicles/{VehicleId}");
+        if (success) Nav.NavigateTo($"vehicles/{VehicleId}");
         else errorMessage = "Failed to save log entry.";
     }
 
-    private void GoBack() => Nav.NavigateTo($"/vehicles/{VehicleId}");
+    private void GoBack() => Nav.NavigateTo($"vehicles/{VehicleId}");
+
+
 }
