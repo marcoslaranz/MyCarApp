@@ -313,3 +313,4 @@ D:\Projects\MyCarApp\src\MyCarApp.Api\obj\Debug\net10.0\ref\MyCarApp.Api.dll
 D:\Projects\MyCarApp\src\MyCarApp.Api\bin\Debug\net10.0\Swashbuckle.AspNetCore.Swagger.dll
 D:\Projects\MyCarApp\src\MyCarApp.Api\bin\Debug\net10.0\Swashbuckle.AspNetCore.SwaggerGen.dll
 D:\Projects\MyCarApp\src\MyCarApp.Api\bin\Debug\net10.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+D:\Projects\MyCarApp\src\MyCarApp.Api\obj\Debug\net10.0\MyCarApp.Api.sourcelink.json
