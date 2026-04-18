@@ -1,5 +1,6 @@
-namespace MyCarApp.Client.Services;
+using Microsoft.AspNetCore.Components;
 
+namespace MyCarApp.Client.Services;
 public class NavigationService
 {
     private readonly NavigationManager _nav;
@@ -15,4 +16,5 @@ public class NavigationService
         var cleanPath = path.TrimStart('/');
         _nav.NavigateTo(_nav.BaseUri + cleanPath);
     }
+   
 }

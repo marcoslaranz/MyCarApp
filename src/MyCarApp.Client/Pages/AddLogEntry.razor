@@ -81,11 +81,11 @@ else
     private async Task HandleSubmit()
     {
         var success = await LogService.CreateLogAsync(VehicleId, log);
-        if (success) Nav.NavigateTo($"vehicles/{VehicleId}");
+        if (success) NavService.NavigateTo($"vehicles/{VehicleId}");
         else errorMessage = "Failed to save log entry.";
     }
 
-    private void GoBack() => Nav.NavigateTo($"vehicles/{VehicleId}");
+    private void GoBack() => NavService.NavigateTo($"vehicles/{VehicleId}");
 
 
 }
