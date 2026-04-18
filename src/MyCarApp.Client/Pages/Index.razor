@@ -7,7 +7,6 @@
 
 <button @onclick="GoToAddVehicle">+ Add Vehicle</button>
 
-
 @if (vehicles == null)
 {
     <p>Loading...</p>
@@ -22,7 +21,7 @@ else
         @foreach (var vehicle in vehicles)
         {
             <li>
-                <a href="vehicles/@vehicle.Id">
+                <a href="@NavService.GetPath($"vehicles/{vehicle.Id}")">
                     @vehicle.Year @vehicle.Make @vehicle.Model — @vehicle.Name
                 </a>
             </li>
@@ -36,18 +35,15 @@ else
     protected override async Task OnInitializedAsync()
     {
         var loggedIn = await Auth.IsLoggedInAsync();
-        if (!loggedIn) { NavService.NavigateTo("/login"); return; }
+        if (!loggedIn) { NavService.NavigateTo("login"); return; }
         vehicles = await VehicleService.GetVehiclesAsync();
     }
 
-    
-    private void GoToAddVehicle() => NavService.NavigateTo("/MyCarApp/vehicles/add");
+    private void GoToAddVehicle() => NavService.NavigateTo("vehicles/add");
 
     private async Task HandleLogout()
     {
         await Auth.Logout();
-        NavService.NavigateTo("/MyCarApp/login");
+        NavService.NavigateTo("login");
     }
-
- 
 }

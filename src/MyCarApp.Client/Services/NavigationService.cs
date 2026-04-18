@@ -17,4 +17,9 @@ public class NavigationService
         _nav.NavigateTo(_nav.BaseUri + cleanPath);
     }
    
+    public string GetPath(string path)
+    {
+        var cleanPath = path.TrimStart('/');
+        return _nav.BaseUri + cleanPath;
+    }
 }
