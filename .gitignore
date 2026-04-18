@@ -1,0 +1,14 @@
+# .NET
+**/bin/
+**/obj/
+**/.vs/
+
+# User secrets
+**/appsettings.Development.json
+
+# Docker volumes
+postgres_data/
+
+# OS
+.DS_Store
+Thumbs.db
