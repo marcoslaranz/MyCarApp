@@ -15,6 +15,7 @@ builder.Services.AddScoped(sp => new HttpClient
 });
 */
 
+/*
 builder.Services.AddScoped(sp =>
 {
     var navigationManager = sp.GetRequiredService<NavigationManager>();
@@ -23,6 +24,22 @@ builder.Services.AddScoped(sp =>
     
     return new HttpClient { BaseAddress = apiBase };
 });
+*/
+
+
+builder.Services.AddScoped(sp =>
+{
+    var navigationManager = sp.GetRequiredService<NavigationManager>();
+    var baseUri = new Uri(navigationManager.BaseUri);
+    
+    // Use Railway API in production, local API in development
+    var apiBase = baseUri.Host.Contains("localhost") || baseUri.Host.Contains("192.168")
+        ? new Uri($"{baseUri.Scheme}://{baseUri.Host}:5236/")
+        : new Uri("https://mycarapp-production.up.railway.app/");
+    
+    return new HttpClient { BaseAddress = apiBase };
+});
+
 
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<VehicleService>();
