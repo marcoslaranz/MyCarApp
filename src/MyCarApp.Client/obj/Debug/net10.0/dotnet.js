@@ -5,7 +5,7 @@ var e=!1;const t=async()=>WebAssembly.validate(new Uint8Array([0,97,115,109,1,0,
   "mainAssemblyName": "MyCarApp.Client",
   "applicationEnvironment": "Development",
   "resources": {
-    "hash": "sha256-NmweXZvpy2m/+5FMOjMpiCZOwVoNfM2de9RvCuWTxeA=",
+    "hash": "sha256-8FznUWTpe4FKfmDILRgGwyLKyenDzB/13QScAW44rv8=",
     "jsModuleNative": [
       {
         "name": "dotnet.native.3qf6w265iu.js"
@@ -1254,16 +1254,16 @@ var e=!1;const t=async()=>WebAssembly.validate(new Uint8Array([0,97,115,109,1,0,
       },
       {
         "virtualPath": "MyCarApp.Client.wasm",
-        "name": "MyCarApp.Client.683vnrhr17.wasm",
-        "integrity": "sha256-6ko/K2lOxJSwh6q+Ueaen/+nu5hxsXAzQIe0DlRjvrM=",
+        "name": "MyCarApp.Client.wgi15cgtax.wasm",
+        "integrity": "sha256-QNcC1oXhK+H5eBpW06RFjsoe6AaRic98VaEu94RW4Vc=",
         "cache": "force-cache"
       }
     ],
     "pdb": [
       {
         "virtualPath": "MyCarApp.Client.pdb",
-        "name": "MyCarApp.Client.yt6nlf3l1b.pdb",
-        "integrity": "sha256-qjyAh9bfE9mLbmZ8HpuaAHS6G38ufVwn9k8+CVoGHc4=",
+        "name": "MyCarApp.Client.t4db28qv0f.pdb",
+        "integrity": "sha256-wybCmEzzgZbQdF4VlePBioGlPOWZCbbXm/t6Q7H1zkY=",
         "cache": "force-cache"
       }
     ],

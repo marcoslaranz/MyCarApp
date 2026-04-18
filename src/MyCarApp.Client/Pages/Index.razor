@@ -1,7 +1,7 @@
 @page "/"
 @inject VehicleService VehicleService
 @inject AuthService Auth
-@inject NavigationManager Nav
+@inject NavigationService NavService
 
 <h3>My Vehicles</h3>
 
@@ -36,17 +36,17 @@ else
     protected override async Task OnInitializedAsync()
     {
         var loggedIn = await Auth.IsLoggedInAsync();
-        if (!loggedIn) { Nav.NavigateTo("/login"); return; }
+        if (!loggedIn) { NavService.NavigateTo("/login"); return; }
         vehicles = await VehicleService.GetVehiclesAsync();
     }
 
     
-    private void GoToAddVehicle() => Nav.NavigateTo("/MyCarApp/vehicles/add");
+    private void GoToAddVehicle() => NavService.NavigateTo("/MyCarApp/vehicles/add");
 
     private async Task HandleLogout()
     {
         await Auth.Logout();
-        Nav.NavigateTo("/MyCarApp/login");
+        NavService.NavigateTo("/MyCarApp/login");
     }
 
  
