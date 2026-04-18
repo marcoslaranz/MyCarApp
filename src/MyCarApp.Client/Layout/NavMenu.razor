@@ -1,0 +1,12 @@
+﻿@inject AuthService Auth
+@inject NavigationManager Nav
+
+<button class="logout-btn" @onclick="HandleLogout">Logout</button>
+
+@code {
+    private async Task HandleLogout()
+    {
+        await Auth.Logout();
+        Nav.NavigateTo("/login");
+    }
+}

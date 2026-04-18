@@ -1,0 +1,89 @@
+@page "/vehicles/{VehicleId:int}/logs/add"
+@inject LogEntryService LogService
+@inject NavigationManager Nav
+
+<h3>Add Log Entry</h3>
+
+@if (loading)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <div>
+        <label>Date & Time</label>
+        <input @bind="log.DateTime" type="datetime-local" />
+    </div>
+    <div>
+        <label>Odometer (km)</label>
+        @if (lastOdometerKm.HasValue)
+        {
+            <p style="color:#2e7d32; font-size:0.85rem; margin-bottom:0.3rem;">
+                Last recorded: @lastOdometerKm.Value.ToString("N0") km
+            </p>
+        }
+        <input @bind="log.OdometerKm" type="number" placeholder="e.g. 12500" min="0" />
+    </div>
+    <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.85rem;">
+        <input @bind="log.FuelLoaded" type="checkbox" id="fuelLoaded" />
+        <label for="fuelLoaded" style="margin:0; text-transform:none; font-size:1rem;">Fuel loaded?</label>
+    </div>
+
+    @if (log.FuelLoaded)
+    {
+        <div>
+            <label>Petrol Station</label>
+            <input @bind="log.PetrolStationName" placeholder="Station name" />
+        </div>
+        <div>
+            <label>Litres</label>
+            <input @bind="log.FuelLiters" type="number" step="0.001" placeholder="e.g. 45.000" />
+        </div>
+        <div>
+            <label>Price per Litre</label>
+            <input @bind="log.FuelPricePerLiter" type="number" step="0.001" placeholder="e.g. 2.459" />
+        </div>
+        <div>
+            <label>Total Paid</label>
+            <input @bind="log.FuelTotalPaid" type="number" step="0.01" placeholder="e.g. 110.65" />
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <p style="color:red">@errorMessage</p>
+    }
+
+    <button @onclick="HandleSubmit">Save</button>
+    <button class="btn-secondary" @onclick="GoBack">Cancel</button>
+}
+
+@code {
+    [Parameter] public int VehicleId { get; set; }
+
+    private LogEntry log = new() { DateTime = DateTime.Now };
+    private string errorMessage = string.Empty;
+    private decimal? lastOdometerKm = null;
+    private bool loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var logs = await LogService.GetLogsAsync(VehicleId);
+        if (logs.Any())
+        {
+            var lastLog = logs.OrderByDescending(l => l.DateTime).First();
+            lastOdometerKm = lastLog.OdometerKm;
+            log.OdometerKm = lastLog.OdometerKm;
+        }
+        loading = false;
+    }
+
+    private async Task HandleSubmit()
+    {
+        var success = await LogService.CreateLogAsync(VehicleId, log);
+        if (success) Nav.NavigateTo($"/vehicles/{VehicleId}");
+        else errorMessage = "Failed to save log entry.";
+    }
+
+    private void GoBack() => Nav.NavigateTo($"/vehicles/{VehicleId}");
+}

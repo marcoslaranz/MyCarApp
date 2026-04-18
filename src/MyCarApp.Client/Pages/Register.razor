@@ -1,0 +1,54 @@
+@page "/register"
+@inject AuthService Auth
+@inject NavigationManager Nav
+
+<h3>Register</h3>
+
+<div>
+    <input @bind="email" placeholder="Email" type="email" />
+</div>
+<div>
+    <input @bind="password" placeholder="Password" type="password" />
+</div>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <p style="color:red">@errorMessage</p>
+}
+
+@if (!string.IsNullOrEmpty(debugMessage))
+{
+    <p style="color:blue">@debugMessage</p>
+}
+
+<button @onclick="HandleRegister">Register</button>
+<p>Already have an account? <a href="/login">Login</a></p>
+
+@code {
+    private string email = string.Empty;
+    private string password = string.Empty;
+    private string errorMessage = string.Empty;
+    private string debugMessage = string.Empty;
+
+    private async Task HandleRegister()
+    {
+        errorMessage = string.Empty;
+        debugMessage = "Sending request...";
+
+        try
+        {
+            var (success, error) = await Auth.Register(email, password);
+            debugMessage = $"Response received. Success: {success}. Error: {error}";
+
+            if (success)
+                Nav.NavigateTo("/login");
+            else
+                errorMessage = error ?? "Registration failed.";
+        }
+        catch (Exception ex)
+        {
+            debugMessage = string.Empty;
+            errorMessage = $"Exception: {ex.Message}";
+        }
+    }
+}

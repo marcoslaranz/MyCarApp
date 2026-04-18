@@ -1,0 +1,284 @@
+@page "/vehicles/{Id:int}"
+@inject VehicleService VehicleService
+@inject LogEntryService LogService
+@inject NavigationManager Nav
+
+@if (editMode)
+{
+    <h3>Edit Vehicle</h3>
+
+    <div><label>Nickname</label><input @bind="editVehicle!.Name" /></div>
+    <div><label>Make</label><input @bind="editVehicle!.Make" /></div>
+    <div><label>Model</label><input @bind="editVehicle!.Model" /></div>
+    <div><label>Year</label><input @bind="editVehicle!.Year" type="number" min="1900" max="2100" class="input-short" /></div>
+    <div><label>License Plate</label><input @bind="editVehicle!.LicensePlate" /></div>
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <p style="color:red">@errorMessage</p>
+    }
+
+    <button @onclick="HandleSaveEdit">Save</button>
+    <button class="btn-secondary" @onclick="GoBack">Back</button>
+}
+else
+{
+    <h3>@vehicle?.Name</h3>
+    <p>@vehicle?.Year @vehicle?.Make @vehicle?.Model | @vehicle?.LicensePlate</p>
+
+    <button @onclick="GoToAddLog">+ Add Log Entry</button>
+    <button @onclick="StartEdit">Edit Vehicle</button>
+    <button class="btn-secondary" @onclick="GoBack">Back</button>
+
+
+
+<!-- New code -->
+                        
+                            @if (logs != null && logs.Any())
+                            {
+                                <div class="stats-grid">
+                                    <div class="stat-card">
+                                        <span class="stat-label">Total KMs</span>
+                                        <span class="stat-value">@totalKms.ToString("N0")</span>
+                                    </div>
+                                    <div class="stat-card">
+                                        <span class="stat-label">Fill-ups</span>
+                                        <span class="stat-value">@fillUps</span>
+                                    </div>
+                                    <div class="stat-card">
+                                        <span class="stat-label">Total Fuel Cost</span>
+                                        <span class="stat-value">$@totalFuelCost.ToString("N2")</span>
+                                    </div>
+                                    <div class="stat-card">
+                                        <span class="stat-label">Total Litres</span>
+                                        <span class="stat-value">@totalLitres.ToString("N1") L</span>
+                                    </div>
+                                    <div class="stat-card">
+                                        <span class="stat-label">Avg Consumption</span>
+                                        <span class="stat-value">@avgConsumption L/100km</span>
+                                    </div>
+                                    <div class="stat-card">
+                                        <span class="stat-label">Avg Cost/Fill-up</span>
+                                        <span class="stat-value">$@avgCostPerFillUp.ToString("N2")</span>
+                                    </div>
+                                </div>
+                            }
+
+<!-- New code -->
+
+
+
+
+
+
+
+
+
+
+
+    @if (logs == null)
+    {
+        <p>Loading...</p>
+    }
+    else if (!logs.Any())
+    {
+        <p>No log entries yet.</p>
+    }
+    else
+    {
+        <div class="log-table-wrapper">
+            <table class="log-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>KM</th>
+                        <th>Fuel</th>
+                        <th class="expand-col"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var log in logs)
+                    {
+                        <tr class="log-row @(expandedLogId == log.Id ? "expanded" : "")"
+                            @onclick="() => ToggleExpand(log.Id)">
+                            <td>@log.DateTime.ToString("dd/MM/yy HH:mm")</td>
+                            <td>@log.OdometerKm.ToString("N0")</td>
+                            <td>@(log.FuelLoaded ? "⛽" : "—")</td>
+                            <td class="expand-col">@(expandedLogId == log.Id ? "▲" : "▼")</td>
+                        </tr>
+                        @if (expandedLogId == log.Id)
+                        {
+                            <tr class="log-detail-row">
+                                <td colspan="4">
+                                    <div class="log-detail">
+                                        @if (log.FuelLoaded)
+                                        {
+                                            <div class="log-detail-item">
+                                                <span class="log-detail-label">Station</span>
+                                                <span>@(log.PetrolStationName ?? "—")</span>
+                                            </div>
+                                            <div class="log-detail-item">
+                                                <span class="log-detail-label">Litres</span>
+                                                <span>@log.FuelLiters?.ToString("N3")</span>
+                                            </div>
+                                            <div class="log-detail-item">
+                                                <span class="log-detail-label">Price/L</span>
+                                                <span>@log.FuelPricePerLiter?.ToString("N3")</span>
+                                            </div>
+                                            <div class="log-detail-item">
+                                                <span class="log-detail-label">Total Paid</span>
+                                                <span>$@log.FuelTotalPaid?.ToString("N2")</span>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="log-detail-item">
+                                                <span>No fuel loaded on this entry.</span>
+                                            </div>
+                                        }
+                                        <div class="log-detail-actions">
+                                            @if (confirmDeleteId == log.Id)
+                                            {
+                                                <span class="log-detail-label">Are you sure?</span>
+                                                <button class="btn-danger" @onclick="() => ConfirmDelete(log.Id)" 
+                                                        @onclick:stopPropagation="true">Yes, delete</button>
+                                                <button class="btn-secondary" @onclick="() => confirmDeleteId = null"
+                                                        @onclick:stopPropagation="true">Cancel</button>
+                                            }
+                                            else
+                                            {
+                                                <button class="btn-danger" @onclick="() => confirmDeleteId = log.Id"
+                                                        @onclick:stopPropagation="true">🗑 Delete</button>
+                                            }
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+
+                        
+
+
+
+
+
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    private Vehicle? vehicle;
+    private Vehicle? editVehicle;
+    private List<LogEntry>? logs;
+    private bool editMode = false;
+    private string errorMessage = string.Empty;
+    private int? expandedLogId = null;
+    private int? confirmDeleteId = null;
+
+ 
+    protected override async Task OnInitializedAsync()
+    {
+        vehicle = (await VehicleService.GetVehiclesAsync()).FirstOrDefault(v => v.Id == Id);
+        logs = await LogService.GetLogsAsync(Id);
+        CalculateStats();
+    }
+
+    private void ToggleExpand(int logId)
+    {
+        expandedLogId = expandedLogId == logId ? null : logId;
+    }
+
+    private void StartEdit()
+    {
+        editVehicle = new Vehicle
+        {
+            Id = vehicle!.Id,
+            Name = vehicle.Name,
+            Make = vehicle.Make,
+            Model = vehicle.Model,
+            Year = vehicle.Year,
+            LicensePlate = vehicle.LicensePlate
+        };
+        editMode = true;
+        errorMessage = string.Empty;
+    }
+
+    private void CancelEdit()
+    {
+        editMode = false;
+        errorMessage = string.Empty;
+    }
+
+    private async Task HandleSaveEdit()
+    {
+        var success = await VehicleService.UpdateVehicleAsync(editVehicle!);
+        if (success)
+        {
+            vehicle = editVehicle;
+            editMode = false;
+        }
+        else
+        {
+            errorMessage = "Failed to update vehicle.";
+        }
+    }
+
+
+
+    // Stats
+    private decimal totalKms = 0;
+    private int fillUps = 0;
+    private decimal totalFuelCost = 0;
+    private decimal totalLitres = 0;
+    private string avgConsumption = "—";
+    private decimal avgCostPerFillUp = 0;
+
+    private void CalculateStats()
+    {
+        if (logs == null || !logs.Any()) return;
+
+        var ordered = logs.OrderBy(l => l.DateTime).ToList();
+
+        // Total KMs — difference between first and last odometer
+        if (ordered.Count >= 2)
+            totalKms = ordered.Last().OdometerKm - ordered.First().OdometerKm;
+        else
+            totalKms = 0;
+
+        // Fuel stats
+        var fuelLogs = ordered.Where(l => l.FuelLoaded).ToList();
+        fillUps = fuelLogs.Count;
+        totalFuelCost = fuelLogs.Sum(l => l.FuelTotalPaid ?? 0);
+        totalLitres = fuelLogs.Sum(l => l.FuelLiters ?? 0);
+
+        // Avg consumption (L/100km)
+        if (totalKms > 0 && totalLitres > 0)
+            avgConsumption = ((totalLitres / totalKms) * 100).ToString("N1");
+        else
+            avgConsumption = "—";
+
+        // Avg cost per fill-up
+        avgCostPerFillUp = fillUps > 0 ? totalFuelCost / fillUps : 0;
+    }
+
+
+
+    private async Task ConfirmDelete(int logId)
+    {
+        var success = await LogService.DeleteLogAsync(Id, logId);
+        if (success)
+        {
+            logs = logs?.Where(l => l.Id != logId).ToList();
+            expandedLogId = null;
+            confirmDeleteId = null;
+            CalculateStats();
+        }
+    }
+    private void GoToAddLog() => Nav.NavigateTo($"/vehicles/{Id}/logs/add");
+    private void GoBack() => Nav.NavigateTo("/");
+}

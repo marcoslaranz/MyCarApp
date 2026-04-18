@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MyCarApp.Client</title>
+    <base href="/" />
+    <link href="_framework/dotnet.zrvh2wv2ug.js" rel="preload" as="script" fetchpriority="high" crossorigin="anonymous" integrity="sha256-4RLO4nZAzi7AR1jOs0Tlj+hG6mYrAS7GjdxqKvN39O0=" />
+    <!-- <link rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.css" /> -->
+    <link rel="stylesheet" href="css/app.css" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link href="MyCarApp.Client.styles.css" rel="stylesheet" />
+    <link href="manifest.webmanifest" rel="manifest" />
+    <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png" />
+    <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png" />
+    <script type="importmap">{
+  "imports": {
+    "./_content/Microsoft.DotNet.HotReload.WebAssembly.Browser/Microsoft.DotNet.HotReload.WebAssembly.Browser.lib.module.js": "./_content/Microsoft.DotNet.HotReload.WebAssembly.Browser/Microsoft.DotNet.HotReload.WebAssembly.Browser.99zm1jdh75.lib.module.js",
+    "./_framework/blazor.webassembly.js": "./_framework/blazor.webassembly.66stpp682q.js",
+    "./_framework/dotnet.native.js": "./_framework/dotnet.native.3qf6w265iu.js",
+    "./_framework/dotnet.runtime.js": "./_framework/dotnet.runtime.f4b1oiwlzh.js",
+    "./_framework/dotnet.js": "./_framework/dotnet.zrvh2wv2ug.js",
+    "./lib/bootstrap/dist/js/bootstrap.bundle.min.js": "./lib/bootstrap/dist/js/bootstrap.bundle.min.493y06b0oq.js",
+    "./lib/bootstrap/dist/js/bootstrap.bundle.js": "./lib/bootstrap/dist/js/bootstrap.bundle.sjw6k6alk3.js",
+    "./lib/bootstrap/dist/js/bootstrap.esm.js": "./lib/bootstrap/dist/js/bootstrap.esm.ganz5qb3fy.js",
+    "./lib/bootstrap/dist/js/bootstrap.esm.min.js": "./lib/bootstrap/dist/js/bootstrap.esm.min.jj8uyg4cgr.js",
+    "./lib/bootstrap/dist/js/bootstrap.min.js": "./lib/bootstrap/dist/js/bootstrap.min.63fj8s7r0e.js",
+    "./lib/bootstrap/dist/js/bootstrap.js": "./lib/bootstrap/dist/js/bootstrap.q08ddc593s.js"
+  },
+  "scopes": {},
+  "integrity": {
+    "./_content/Microsoft.AspNetCore.Components.WebAssembly.Authentication/AuthenticationService.js": "sha256-kJXKqRCleT/Jk1wJUhUu24r2LAA7IWVYmdoENizE38M=",
+    "./_content/Microsoft.DotNet.HotReload.WebAssembly.Browser/Microsoft.DotNet.HotReload.WebAssembly.Browser.99zm1jdh75.lib.module.js": "sha256-A8e6zZwhOqf7lDQqbbCYcAUv4wGE9aQxOo4WyYxR//0=",
+    "./_content/Microsoft.DotNet.HotReload.WebAssembly.Browser/Microsoft.DotNet.HotReload.WebAssembly.Browser.lib.module.js": "sha256-A8e6zZwhOqf7lDQqbbCYcAUv4wGE9aQxOo4WyYxR//0=",
+    "./_framework/blazor.webassembly.66stpp682q.js": "sha256-3lCWrko3zwspV40aQhs2S/IMkRSarnHRKIdkHhuXIBA=",
+    "./_framework/blazor.webassembly.js": "sha256-3lCWrko3zwspV40aQhs2S/IMkRSarnHRKIdkHhuXIBA=",
+    "./_framework/dotnet.js": "sha256-4RLO4nZAzi7AR1jOs0Tlj+hG6mYrAS7GjdxqKvN39O0=",
+    "./_framework/dotnet.native.3qf6w265iu.js": "sha256-5WJWKyRAy1ynOGugXKh/YchOnzSV97RMlyJnLcgr7m8=",
+    "./_framework/dotnet.native.js": "sha256-5WJWKyRAy1ynOGugXKh/YchOnzSV97RMlyJnLcgr7m8=",
+    "./_framework/dotnet.runtime.f4b1oiwlzh.js": "sha256-j86bNQPKznxC4epcftZFbThfaMXvIRmSeHo8PdvTrdA=",
+    "./_framework/dotnet.runtime.js": "sha256-j86bNQPKznxC4epcftZFbThfaMXvIRmSeHo8PdvTrdA=",
+    "./_framework/dotnet.zrvh2wv2ug.js": "sha256-4RLO4nZAzi7AR1jOs0Tlj+hG6mYrAS7GjdxqKvN39O0=",
+    "./lib/bootstrap/dist/js/bootstrap.bundle.js": "sha256-uMkI/0kD9VWemt2MuXCociqykifdwpaQ4spFQpO873Q=",
+    "./lib/bootstrap/dist/js/bootstrap.bundle.min.493y06b0oq.js": "sha256-CDOy6cOibCWEdsRiZuaHf8dSGGJRYuBGC+mjoJimHGw=",
+    "./lib/bootstrap/dist/js/bootstrap.bundle.min.js": "sha256-CDOy6cOibCWEdsRiZuaHf8dSGGJRYuBGC+mjoJimHGw=",
+    "./lib/bootstrap/dist/js/bootstrap.bundle.sjw6k6alk3.js": "sha256-uMkI/0kD9VWemt2MuXCociqykifdwpaQ4spFQpO873Q=",
+    "./lib/bootstrap/dist/js/bootstrap.esm.ganz5qb3fy.js": "sha256-qJ113/Jv4hQYFv/ji7x7PIbOvL6apkUf7zDMZrHoTg4=",
+    "./lib/bootstrap/dist/js/bootstrap.esm.js": "sha256-qJ113/Jv4hQYFv/ji7x7PIbOvL6apkUf7zDMZrHoTg4=",
+    "./lib/bootstrap/dist/js/bootstrap.esm.min.jj8uyg4cgr.js": "sha256-QZdFT1ZNdly4rmgUBtXmXFS9BU1FTa+sPe6h794sFRQ=",
+    "./lib/bootstrap/dist/js/bootstrap.esm.min.js": "sha256-QZdFT1ZNdly4rmgUBtXmXFS9BU1FTa+sPe6h794sFRQ=",
+    "./lib/bootstrap/dist/js/bootstrap.js": "sha256-2tZUYQmsPZFYnnpqYrsiViFVenatlVAQmIUTNWH5zbk=",
+    "./lib/bootstrap/dist/js/bootstrap.min.63fj8s7r0e.js": "sha256-3gQJhtmj7YnV1fmtbVcnAV6eI4ws0Tr48bVZCThtCGQ=",
+    "./lib/bootstrap/dist/js/bootstrap.min.js": "sha256-3gQJhtmj7YnV1fmtbVcnAV6eI4ws0Tr48bVZCThtCGQ=",
+    "./lib/bootstrap/dist/js/bootstrap.q08ddc593s.js": "sha256-2tZUYQmsPZFYnnpqYrsiViFVenatlVAQmIUTNWH5zbk="
+  }
+}</script>
+</head>
+
+<body>
+
+    <!--
+    <div id="app">
+        <svg class="loading-progress">
+            <circle r="40%" cx="50%" cy="50%" />
+            <circle r="40%" cx="50%" cy="50%" />
+        </svg>
+        <div class="loading-progress-text"></div>
+    </div>
+
+-->
+
+
+    <div id="app">
+        <div style="
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: #ffffff;
+        ">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">🚗</div>
+            <div style="
+                font-size: 1.2rem;
+                font-weight: 800;
+                color: #2e7d32;
+                margin-bottom: 1.5rem;
+            ">MyCarApp</div>
+            <div style="
+                width: 48px;
+                height: 48px;
+                border: 5px solid #c8e6c9;
+                border-top-color: #2e7d32;
+                border-radius: 50%;
+                animation: spin 0.8s linear infinite;
+            "></div>
+        </div>
+    </div>
+
+
+
+
+
+
+<!--
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="." class="reload">Reload</a>
+        <span class="dismiss">🗙</span>
+    </div>
+-->
+    
+    <div id="blazor-error-ui" style="display:none!important">
+        An unhandled error has occurred.
+        <a href="." class="reload">Reload</a>
+        <span class="dismiss">🗙</span>
+    </div>
+
+
+    <script src="_framework/blazor.webassembly.66stpp682q.js"></script> 
+    <script>navigator.serviceWorker.register('service-worker.js', { updateViaCache: 'none' });</script> 
+
+<!--
+    <script>
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            for(let registration of registrations) {
+                registration.unregister();
+            }
+        });
+    }
+    -->
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,33 @@
+@page "/vehicles/add"
+@inject VehicleService VehicleService
+@inject NavigationManager Nav
+
+<h3>Add Vehicle</h3>
+
+<div><label>Nickname</label><input @bind="vehicle.Name" placeholder="e.g. My Honda" /></div>
+<div><label>Make</label><input @bind="vehicle.Make" placeholder="e.g. Honda" /></div>
+<div><label>Model</label><input @bind="vehicle.Model" placeholder="e.g. Civic" /></div>
+<div><label>Year</label><input @bind="vehicle.Year" type="number" min="1900" max="2100" class="input-short" placeholder="e.g. 2020" /></div>
+<div><label>License Plate</label><input @bind="vehicle.LicensePlate" placeholder="e.g. ABC123" /></div>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <p style="color:red">@errorMessage</p>
+}
+
+<button @onclick="HandleSubmit">Save</button>
+<button class="btn-secondary" @onclick="GoBack">Cancel</button>
+
+@code {
+    private Vehicle vehicle = new() { Year = DateTime.Now.Year };
+    private string errorMessage = string.Empty;
+
+    private async Task HandleSubmit()
+    {
+        var success = await VehicleService.CreateVehicleAsync(vehicle);
+        if (success) Nav.NavigateTo("/");
+        else errorMessage = "Failed to save vehicle.";
+    }
+
+    private void GoBack() => Nav.NavigateTo("/");
+}

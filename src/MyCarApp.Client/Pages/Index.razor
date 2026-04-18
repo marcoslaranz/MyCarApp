@@ -1,0 +1,46 @@
+@page "/"
+@inject VehicleService VehicleService
+@inject AuthService Auth
+@inject NavigationManager Nav
+
+<h3>My Vehicles</h3>
+
+<button @onclick="GoToAddVehicle">+ Add Vehicle</button>
+
+
+@if (vehicles == null)
+{
+    <p>Loading...</p>
+}
+else if (!vehicles.Any())
+{
+    <p>No vehicles yet. Add your first one!</p>
+}
+else
+{
+    <ul>
+        @foreach (var vehicle in vehicles)
+        {
+            <li>
+                <a href="vehicles/@vehicle.Id">
+                    @vehicle.Year @vehicle.Make @vehicle.Model — @vehicle.Name
+                </a>
+            </li>
+        }
+    </ul>
+}
+
+@code {
+    private List<Vehicle>? vehicles;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var loggedIn = await Auth.IsLoggedInAsync();
+        if (!loggedIn) { Nav.NavigateTo("/login"); return; }
+        vehicles = await VehicleService.GetVehiclesAsync();
+    }
+
+    private void GoToAddVehicle() => Nav.NavigateTo("/vehicles/add");
+
+ 
+}

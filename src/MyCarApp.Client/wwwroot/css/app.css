@@ -1,0 +1,289 @@
+/* ── Reset & Base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background: #f4f6f4;
+    color: #1a1a1a;
+    font-size: 16px;
+    min-height: 100vh;
+    height: -webkit-fill-available;
+}
+
+/* ── App Shell ── */
+.app-shell {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    max-width: 480px;
+    margin: 0 auto;
+    background: #ffffff;
+    box-shadow: 0 0 24px rgba(0,0,0,0.08);
+}
+
+/* ── Header ── */
+.app-header {
+    background: #2e7d32;
+    color: white;
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.app-title {
+    font-size: 1.3rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+/* ── Logout Button ── */
+.logout-btn {
+    background: rgba(255,255,255,0.2);
+    color: white;
+    border: 2px solid rgba(255,255,255,0.5);
+    border-radius: 20px;
+    padding: 0.3rem 0.9rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.logout-btn:hover {
+    background: rgba(255,255,255,0.35);
+}
+
+/* ── Main Content ── */
+.app-content {
+    padding: 1.25rem;
+    flex: 1;
+}
+
+/* ── Headings ── */
+h1, h2, h3 {
+    color: #2e7d32;
+    font-weight: 800;
+    margin-bottom: 1rem;
+}
+
+h3 { font-size: 1.4rem; }
+
+/* ── Buttons ── */
+button {
+    display: inline-block;
+    padding: 0.75rem 1.25rem;
+    border-radius: 10px;
+    border: none;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin: 0.25rem 0.25rem 0.25rem 0;
+    background: #2e7d32;
+    color: white;
+}
+
+button:hover {
+    background: #1b5e20;
+}
+
+button.btn-secondary {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+button.btn-secondary:hover {
+    background: #c8e6c9;
+}
+
+/* ── Forms ── */
+div:has(> label) {
+    margin-bottom: 0.85rem;
+}
+
+label {
+    display: block;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: #555;
+    margin-bottom: 0.3rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="datetime-local"] {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #c8e6c9;
+    border-radius: 10px;
+    font-size: 1rem;
+    background: #f9fff9;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+}
+
+input:focus {
+    outline: none;
+    border-color: #2e7d32;
+    background: #fff;
+}
+
+input[type="checkbox"] {
+    width: 1.4rem;
+    height: 1.4rem;
+    accent-color: #2e7d32;
+    cursor: pointer;
+}
+
+input.input-short {
+    width: 120px;
+}
+
+/* ── Vehicle Cards ── */
+ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin: 1rem 0;
+}
+
+ul li a {
+    display: block;
+    background: #fff;
+    border: 2px solid #c8e6c9;
+    border-left: 5px solid #2e7d32;
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    color: #1a1a1a;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1rem;
+    transition: all 0.2s;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+ul li a:hover {
+    border-left-color: #1b5e20;
+    background: #f1f8f1;
+    transform: translateX(3px);
+}
+
+/* ── Compact Log Table ── */
+.log-table-wrapper {
+    margin-top: 1rem;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 2px solid #c8e6c9;
+}
+
+.log-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.log-table th {
+    background: #2e7d32;
+    color: white;
+    padding: 0.6rem 0.75rem;
+    text-align: left;
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+}
+
+.log-table td {
+    padding: 0.75rem;
+    border-bottom: 1px solid #e8f5e9;
+    vertical-align: middle;
+}
+
+.log-row {
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.log-row:hover td, .log-row.expanded td {
+    background: #e8f5e9;
+}
+
+.expand-col {
+    text-align: right;
+    color: #2e7d32;
+    font-size: 0.75rem;
+    width: 24px;
+}
+
+#blazor-error-ui {
+    display: none !important;
+}
+
+/* ── Loading Spinner ── */
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ── Delete Button ── */
+button.btn-danger {
+    background: #c62828;
+    color: white;
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+}
+
+button.btn-danger:hover {
+    background: #b71c1c;
+}
+
+/* ── Log Detail Actions ── */
+.log-detail-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid #c8e6c9;
+}
+
+/* ── Stats Grid ── */
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin: 1rem 0;
+}
+
+.stat-card {
+    background: #f1f8f1;
+    border: 2px solid #c8e6c9;
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #555;
+    letter-spacing: 0.5px;
+}
+
+.stat-value {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #2e7d32;
+}
