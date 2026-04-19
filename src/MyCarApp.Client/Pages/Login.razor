@@ -35,7 +35,7 @@
     {
         var success = await Auth.Login(email, password);
         if (success)
-            Nav.NavigateTo("/");
+            Nav.NavigateTo(Nav.BaseUri);
         else
             errorMessage = "Invalid email or password.";
     }
