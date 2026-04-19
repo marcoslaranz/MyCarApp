@@ -78,24 +78,29 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // CORS — allow Blazor client
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("BlazorClient", policy =>
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod());
+});
+
+
+
 /*
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("BlazorClient", policy =>
-        policy.AllowAnyOrigin()
+        policy.WithOrigins(
+            "https://marcoslaranz.github.io",
+            "http://localhost:5014",
+            "https://localhost:7014",
+            "http://192.168.20.15:5014")
               .AllowAnyHeader()
               .AllowAnyMethod());
 });
-
 */
-
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("BlazorClient", policy =>
-        policy.AllowAnyOrigin()
-              .AllowAnyHeader()
-              .AllowAnyMethod());
-});
 
 
 var app = builder.Build();
