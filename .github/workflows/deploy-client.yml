@@ -40,12 +40,13 @@ jobs:
           EOF
           sed -i 's|<script type="importmap">|<script>var l=window.location;if(l.search[1]==="/"){ var decoded=l.search.slice(1).split("\&").join("\&");window.history.replaceState(null,null,l.pathname.slice(0,l.pathname.lastIndexOf("/")+1)+decoded+l.hash); }</script><script type="importmap">|' publish/wwwroot/index.html
 
-      - name: Update service worker version
+      - name: Replace service worker to disable integrity checks
         run: |
-          echo "const CACHE_VERSION = '$(date +%s)';" >> publish/wwwroot/service-worker.js
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: publish/wwwroot
+          cat > publish/wwwroot/service-worker.js << 'EOF'
+          const CACHE_VERSION = 'v${{ github.run_number }}';
+          self.addEventListener('fetch', (event) => {
+              event.respondWith(fetch(event.request));
+          });
+          self.addEventListener('install', () => self.skipWaiting());
+          self.addEventListener('activate', (event) => {
+              event.waitUnti
