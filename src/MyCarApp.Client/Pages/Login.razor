@@ -3,6 +3,8 @@
 @inject NavigationService NavService
 @inject NavigationManager DebugNav
 
+@inject NavigationManager Nav
+
 <h3>Login</h3>
 
 <div>
@@ -33,7 +35,7 @@
     {
         var success = await Auth.Login(email, password);
         if (success)
-            NavService.NavigateTo("");
+            Nav.NavigateTo("/");
         else
             errorMessage = "Invalid email or password.";
     }
