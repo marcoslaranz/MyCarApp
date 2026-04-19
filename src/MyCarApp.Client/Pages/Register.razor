@@ -1,6 +1,6 @@
 @page "/register"
 @inject AuthService Auth
-@inject NavigationManager Nav
+@inject NavigationService NavService
 
 <h3>Register</h3>
 
@@ -41,7 +41,7 @@
             debugMessage = $"Response received. Success: {success}. Error: {error}";
 
             if (success)
-                Nav.NavigateTo("/login");
+                NavService.NavigateTo("/login");
             else
                 errorMessage = error ?? "Registration failed.";
         }

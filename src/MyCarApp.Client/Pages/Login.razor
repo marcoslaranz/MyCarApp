@@ -1,6 +1,6 @@
 @page "/login"
 @inject AuthService Auth
-@inject NavigationManager Nav
+@inject NavigationService NavService
 
 <h3>Login</h3>
 
@@ -30,7 +30,7 @@
     {
         var success = await Auth.Login(email, password);
         if (success)
-            Nav.NavigateTo("/MyCarApp/login");
+            NavService.NavigateTo("/MyCarApp/login");
         else
             errorMessage = "Invalid email or password.";
     }
