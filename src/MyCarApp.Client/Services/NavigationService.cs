@@ -13,13 +13,12 @@ public class NavigationService
 
     public void NavigateTo(string path)
     {
-        var cleanPath = path.TrimStart('/');
-        _nav.NavigateTo(cleanPath, forceLoad: false);
+        // Use NavigationManager directly with relative URI
+        _nav.NavigateTo(path);
     }
 
     public string GetPath(string path)
     {
-        var cleanPath = path.TrimStart('/');
-        return _nav.BaseUri + cleanPath;
+        return path;
     }
 }
