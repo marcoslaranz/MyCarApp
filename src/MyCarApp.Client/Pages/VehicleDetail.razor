@@ -256,14 +256,31 @@ else
         totalFuelCost = fuelLogs.Sum(l => l.FuelTotalPaid ?? 0);
         totalLitres = fuelLogs.Sum(l => l.FuelLiters ?? 0);
 
-        // Avg consumption (L/100km)
-        if (totalKms > 0 && totalLitres > 0)
-            avgConsumption = ((totalLitres / totalKms) * 100).ToString("N1");
-        else
-            avgConsumption = "—";
-
         // Avg cost per fill-up
         avgCostPerFillUp = fillUps > 0 ? totalFuelCost / fillUps : 0;
+
+        // Avg consumption — only calculate between fill-ups
+        // Skip the first fill-up as we don't know the starting fuel level
+        // Use litres from fill-ups 2 onwards divided by KMs driven between them
+        if (fuelLogs.Count >= 2 && totalKms > 0)
+        {
+            // Skip first fill-up, sum remaining litres
+            var litresForCalculation = fuelLogs
+                .Skip(1)
+                .Sum(l => l.FuelLiters ?? 0);
+
+            // KMs driven from first fill-up to last entry
+            var kmsForCalculation = ordered.Last().OdometerKm - fuelLogs.First().OdometerKm;
+
+            if (kmsForCalculation > 0)
+                avgConsumption = ((litresForCalculation / kmsForCalculation) * 100).ToString("N1");
+            else
+                avgConsumption = "—";
+        }
+        else
+        {
+            avgConsumption = "—";
+        }
     }
 
 
