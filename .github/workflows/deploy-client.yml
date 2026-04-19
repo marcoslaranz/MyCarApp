@@ -40,6 +40,10 @@ jobs:
           EOF
           sed -i 's|<script type="importmap">|<script>var l=window.location;if(l.search[1]==="/"){ var decoded=l.search.slice(1).split("\&").join("\&");window.history.replaceState(null,null,l.pathname.slice(0,l.pathname.lastIndexOf("/")+1)+decoded+l.hash); }</script><script type="importmap">|' publish/wwwroot/index.html
 
+      - name: Update service worker version
+        run: |
+          echo "const CACHE_VERSION = '$(date +%s)';" >> publish/wwwroot/service-worker.js
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:

@@ -5,5 +5,8 @@
 
 // Development service worker - no caching, always fetch from network
 self.addEventListener('fetch', (event) => {
-    event.respondWith(fetch(event.request));
+    event.respondWith(
+        fetch(event.request, { integrity: undefined })
+            .catch(() => caches.match(event.request))
+    );
 });
