@@ -1,6 +1,7 @@
 @page "/login"
 @inject AuthService Auth
 @inject NavigationService NavService
+@inject NavigationManager DebugNav
 
 <h3>Login</h3>
 
@@ -19,6 +20,9 @@
 }
 
 <button @onclick="HandleLogin">Login</button>
+
+<p style="color:blue;font-size:0.75rem;">Base: @DebugNav.BaseUri | Current: @DebugNav.Uri</p>
+
 <p>Don't have an account? <a @onclick="GoToRegister" style="cursor:pointer;color:#2e7d32;font-weight:600;">Register</a></p>
 
 @code {
