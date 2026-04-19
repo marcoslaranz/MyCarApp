@@ -1,6 +1,6 @@
 @page "/vehicles/{VehicleId:int}/logs/add"
 @inject LogEntryService LogService
-@inject NavigationService NavService
+@inject NavigationManager Nav
 
 <h3>Add Log Entry</h3>
 
@@ -12,18 +12,20 @@ else
 {
     <div>
         <label>Date & Time</label>
-        <input @bind="log.DateTime" type="datetime-local" />
+        <input type="datetime-local"
+               value="@dateTimeValue"
+               @onchange="OnDateTimeChanged" />
     </div>
     <div>
         <label>Odometer (km)</label>
-        @if (lastOdometerKm.HasValue)
-        {
-            <p style="color:#2e7d32; font-size:0.85rem; margin-bottom:0.3rem;">
-                Last recorded: @lastOdometerKm.Value.ToString("N0") km
-            </p>
-        }
         <input @bind="log.OdometerKm" type="number" placeholder="e.g. 12500" min="0" />
     </div>
+    @if (lastOdometerKm.HasValue)
+    {
+        <p style="color:#2e7d32; font-size:0.85rem; margin-top:-0.5rem; margin-bottom:0.85rem;">
+            Last recorded: @lastOdometerKm.Value.ToString("N0") km
+        </p>
+    }
     <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.85rem;">
         <input @bind="log.FuelLoaded" type="checkbox" id="fuelLoaded" />
         <label for="fuelLoaded" style="margin:0; text-transform:none; font-size:1rem;">Fuel loaded?</label>
@@ -61,13 +63,20 @@ else
 @code {
     [Parameter] public int VehicleId { get; set; }
 
-    private LogEntry log = new() { DateTime = DateTime.Now };
+    private LogEntry log = new();
     private string errorMessage = string.Empty;
     private decimal? lastOdometerKm = null;
     private bool loading = true;
+    private string dateTimeValue = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
+        // Set current datetime
+        var now = DateTime.Now;
+        log.DateTime = now;
+        dateTimeValue = now.ToString("yyyy-MM-ddTHH:mm");
+
+        // Load last odometer reading
         var logs = await LogService.GetLogsAsync(VehicleId);
         if (logs.Any())
         {
@@ -75,17 +84,34 @@ else
             lastOdometerKm = lastLog.OdometerKm;
             log.OdometerKm = lastLog.OdometerKm;
         }
+
         loading = false;
+    }
+
+    private void OnDateTimeChanged(ChangeEventArgs e)
+    {
+        var value = e.Value?.ToString();
+        if (!string.IsNullOrEmpty(value) && DateTime.TryParse(value, out var dt))
+        {
+            log.DateTime = dt;
+            dateTimeValue = value;
+        }
     }
 
     private async Task HandleSubmit()
     {
+        if (log.DateTime == default)
+        {
+            errorMessage = "Please enter a valid date and time.";
+            return;
+        }
+
         var success = await LogService.CreateLogAsync(VehicleId, log);
-        if (success) NavService.NavigateTo($"vehicles/{VehicleId}");
-        else errorMessage = "Failed to save log entry.";
+        if (success)
+            Nav.NavigateTo($"vehicles/{VehicleId}");
+        else
+            errorMessage = "Failed to save log entry.";
     }
 
-    private void GoBack() => NavService.NavigateTo($"vehicles/{VehicleId}");
-
-
+    private void GoBack() => Nav.NavigateTo($"vehicles/{VehicleId}");
 }
