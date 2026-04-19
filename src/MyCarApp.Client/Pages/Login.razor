@@ -33,7 +33,7 @@
     {
         var success = await Auth.Login(email, password);
         if (success)
-            NavService.NavigateTo("/MyCarApp/login");
+            NavService.NavigateTo("/");
         else
             errorMessage = "Invalid email or password.";
     }
