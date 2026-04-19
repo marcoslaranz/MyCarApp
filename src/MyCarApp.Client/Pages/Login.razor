@@ -19,7 +19,7 @@
 }
 
 <button @onclick="HandleLogin">Login</button>
-<p>Don't have an account? <a href="/register">Register</a></p>
+<p>Don't have an account? <a @onclick="GoToRegister" style="cursor:pointer;color:#2e7d32;font-weight:600;">Register</a></p>
 
 @code {
     private string email = string.Empty;
@@ -34,4 +34,6 @@
         else
             errorMessage = "Invalid email or password.";
     }
+
+    private void GoToRegister() => NavService.NavigateTo("register");
 }

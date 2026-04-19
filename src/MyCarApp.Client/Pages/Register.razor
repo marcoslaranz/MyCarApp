@@ -22,7 +22,7 @@
 }
 
 <button @onclick="HandleRegister">Register</button>
-<p>Already have an account? <a href="/login">Login</a></p>
+<p>Already have an account? <a @onclick="GoToLogin" style="cursor:pointer;color:#2e7d32;font-weight:600;">Login</a></p>
 
 @code {
     private string email = string.Empty;
@@ -41,7 +41,7 @@
             debugMessage = $"Response received. Success: {success}. Error: {error}";
 
             if (success)
-                NavService.NavigateTo("/login");
+                NavService.NavigateTo("login");
             else
                 errorMessage = error ?? "Registration failed.";
         }
