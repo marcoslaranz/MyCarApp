@@ -93,48 +93,103 @@ else
                         {
                             <tr class="log-detail-row">
                                 <td colspan="4">
-                                    <div class="log-detail">
-                                        @if (log.FuelLoaded)
-                                        {
-                                            <div class="log-detail-item">
-                                                <span class="log-detail-label">Station</span>
-                                                <span>@(log.PetrolStationName ?? "—")</span>
+                                    @if (editingLogId == log.Id)
+                                    {
+                                        @* Inline Edit Form *@
+                                        <div class="log-detail">
+                                            <div>
+                                                <label>Date & Time</label>
+                                                <input type="datetime-local"
+                                                       value="@editDateTimeValue"
+                                                       @onchange="OnEditDateTimeChanged" />
                                             </div>
-                                            <div class="log-detail-item">
-                                                <span class="log-detail-label">Litres</span>
-                                                <span>@log.FuelLiters?.ToString("N3")</span>
+                                            <div>
+                                                <label>Odometer (km)</label>
+                                                <input @bind="editLog!.OdometerKm" type="number" min="0" />
                                             </div>
-                                            <div class="log-detail-item">
-                                                <span class="log-detail-label">Price/L</span>
-                                                <span>@log.FuelPricePerLiter?.ToString("N3")</span>
+                                            <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.85rem;">
+                                                <input @bind="editLog!.FuelLoaded" type="checkbox" id="editFuelLoaded" />
+                                                <label for="editFuelLoaded" style="margin:0; text-transform:none; font-size:1rem;">Fuel loaded?</label>
                                             </div>
-                                            <div class="log-detail-item">
-                                                <span class="log-detail-label">Total Paid</span>
-                                                <span>$@log.FuelTotalPaid?.ToString("N2")</span>
-                                            </div>
-                                        }
-                                        else
-                                        {
-                                            <div class="log-detail-item">
-                                                <span>No fuel loaded on this entry.</span>
-                                            </div>
-                                        }
-                                        <div class="log-detail-actions">
-                                            @if (confirmDeleteId == log.Id)
+                                            @if (editLog!.FuelLoaded)
                                             {
-                                                <span class="log-detail-label">Are you sure?</span>
-                                                <button class="btn-danger" @onclick="() => ConfirmDelete(log.Id)"
-                                                        @onclick:stopPropagation="true">Yes, delete</button>
-                                                <button class="btn-secondary" @onclick="() => confirmDeleteId = null"
+                                                <div>
+                                                    <label>Petrol Station</label>
+                                                    <input @bind="editLog.PetrolStationName" placeholder="Station name" />
+                                                </div>
+                                                <div>
+                                                    <label>Litres</label>
+                                                    <input @bind="editLog.FuelLiters" type="number" step="0.001" />
+                                                </div>
+                                                <div>
+                                                    <label>Price per Litre</label>
+                                                    <input @bind="editLog.FuelPricePerLiter" type="number" step="0.001" />
+                                                </div>
+                                                <div>
+                                                    <label>Total Paid</label>
+                                                    <input @bind="editLog.FuelTotalPaid" type="number" step="0.01" />
+                                                </div>
+                                            }
+                                            @if (!string.IsNullOrEmpty(editErrorMessage))
+                                            {
+                                                <p style="color:red">@editErrorMessage</p>
+                                            }
+                                            <div class="log-detail-actions">
+                                                <button @onclick="() => HandleSaveLog(log.Id)"
+                                                        @onclick:stopPropagation="true">💾 Save</button>
+                                                <button class="btn-secondary" @onclick="CancelEditLog"
                                                         @onclick:stopPropagation="true">Cancel</button>
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        @* Detail View *@
+                                        <div class="log-detail">
+                                            @if (log.FuelLoaded)
+                                            {
+                                                <div class="log-detail-item">
+                                                    <span class="log-detail-label">Station</span>
+                                                    <span>@(log.PetrolStationName ?? "—")</span>
+                                                </div>
+                                                <div class="log-detail-item">
+                                                    <span class="log-detail-label">Litres</span>
+                                                    <span>@log.FuelLiters?.ToString("N3")</span>
+                                                </div>
+                                                <div class="log-detail-item">
+                                                    <span class="log-detail-label">Price/L</span>
+                                                    <span>@log.FuelPricePerLiter?.ToString("N3")</span>
+                                                </div>
+                                                <div class="log-detail-item">
+                                                    <span class="log-detail-label">Total Paid</span>
+                                                    <span>$@log.FuelTotalPaid?.ToString("N2")</span>
+                                                </div>
                                             }
                                             else
                                             {
-                                                <button class="btn-danger" @onclick="() => confirmDeleteId = log.Id"
-                                                        @onclick:stopPropagation="true">🗑 Delete</button>
+                                                <div class="log-detail-item">
+                                                    <span>No fuel loaded on this entry.</span>
+                                                </div>
                                             }
+                                            <div class="log-detail-actions">
+                                                <button @onclick="() => StartEditLog(log)"
+                                                        @onclick:stopPropagation="true">✏️ Edit</button>
+                                                @if (confirmDeleteId == log.Id)
+                                                {
+                                                    <span class="log-detail-label">Are you sure?</span>
+                                                    <button class="btn-danger" @onclick="() => ConfirmDelete(log.Id)"
+                                                            @onclick:stopPropagation="true">Yes, delete</button>
+                                                    <button class="btn-secondary" @onclick="() => confirmDeleteId = null"
+                                                            @onclick:stopPropagation="true">Cancel</button>
+                                                }
+                                                else
+                                                {
+                                                    <button class="btn-danger" @onclick="() => confirmDeleteId = log.Id"
+                                                            @onclick:stopPropagation="true">🗑 Delete</button>
+                                                }
+                                            </div>
                                         </div>
-                                    </div>
+                                    }
                                 </td>
                             </tr>
                         }
@@ -184,6 +239,12 @@ else
     private string errorMessage = string.Empty;
     private int? expandedLogId = null;
     private int? confirmDeleteId = null;
+
+    // Log entry inline edit
+    private int? editingLogId = null;
+    private LogEntry? editLog = null;
+    private string editDateTimeValue = string.Empty;
+    private string editErrorMessage = string.Empty;
 
     // Stats
     private decimal totalKms = 0;
@@ -247,7 +308,7 @@ else
             avgConsumption = "—";
         }
 
-        // Daily summaries — group by date, pair morning + afternoon
+        // Daily summaries
         dailySummaries = ordered
             .GroupBy(l => DateOnly.FromDateTime(l.DateTime))
             .Select(g =>
@@ -280,8 +341,78 @@ else
 
     private void ToggleExpand(int logId)
     {
-        expandedLogId = expandedLogId == logId ? null : logId;
+        if (expandedLogId == logId)
+        {
+            expandedLogId = null;
+            editingLogId = null;
+            editLog = null;
+        }
+        else
+        {
+            expandedLogId = logId;
+            editingLogId = null;
+            editLog = null;
+        }
         confirmDeleteId = null;
+        editErrorMessage = string.Empty;
+    }
+
+    private void StartEditLog(LogEntry log)
+    {
+        editingLogId = log.Id;
+        editLog = new LogEntry
+        {
+            Id = log.Id,
+            VehicleId = log.VehicleId,
+            DateTime = log.DateTime,
+            OdometerKm = log.OdometerKm,
+            FuelLoaded = log.FuelLoaded,
+            FuelLiters = log.FuelLiters,
+            FuelPricePerLiter = log.FuelPricePerLiter,
+            FuelTotalPaid = log.FuelTotalPaid,
+            PetrolStationName = log.PetrolStationName
+        };
+        editDateTimeValue = log.DateTime.ToString("yyyy-MM-ddTHH:mm");
+        editErrorMessage = string.Empty;
+    }
+
+    private void CancelEditLog()
+    {
+        editingLogId = null;
+        editLog = null;
+        editErrorMessage = string.Empty;
+    }
+
+    private void OnEditDateTimeChanged(ChangeEventArgs e)
+    {
+        var value = e.Value?.ToString();
+        if (!string.IsNullOrEmpty(value) && DateTime.TryParse(value, out var dt))
+        {
+            editLog!.DateTime = dt;
+            editDateTimeValue = value;
+        }
+    }
+
+    private async Task HandleSaveLog(int logId)
+    {
+        if (editLog == null) return;
+
+        var success = await LogService.UpdateLogAsync(Id, editLog);
+        if (success)
+        {
+            var index = logs!.FindIndex(l => l.Id == logId);
+            if (index >= 0)
+                logs[index] = editLog;
+
+            editingLogId = null;
+            editLog = null;
+            editErrorMessage = string.Empty;
+            CalculateStats();
+        }
+        else
+        {
+            editErrorMessage = "Failed to save changes.";
+        }
     }
 
     private void StartEdit()
