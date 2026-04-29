@@ -63,8 +63,8 @@ public class LogEntriesController : ControllerBase
         var log = new LogEntry
         {
             VehicleId = vehicleId,
-            //DateTime = dto.DateTime,
-            DateTime = dto.DateTime.ToUniversalTime(),
+            DateTime = dto.DateTime,
+            //DateTime = dto.DateTime.ToUniversalTime(),
             OdometerKm = dto.OdometerKm,
             FuelLoaded = dto.FuelLoaded,
             FuelLiters = dto.FuelLiters,
@@ -89,8 +89,8 @@ public class LogEntriesController : ControllerBase
 
         if (log == null) return NotFound();
 
-        //log.DateTime = dto.DateTime;
-        log.DateTime = dto.DateTime.ToUniversalTime();
+        log.DateTime = dto.DateTime;
+        //log.DateTime = dto.DateTime.ToUniversalTime();
         log.OdometerKm = dto.OdometerKm;
         log.FuelLoaded = dto.FuelLoaded;
         log.FuelLiters = dto.FuelLiters;
