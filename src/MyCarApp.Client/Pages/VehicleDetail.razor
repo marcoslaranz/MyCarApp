@@ -28,6 +28,7 @@ else
 
     <button @onclick="GoToAddLog">+ Add Log Entry</button>
     <button @onclick="StartEdit">Edit Vehicle</button>
+    <button @onclick="GoToExport">📤 Export</button>
     <button class="btn-secondary" @onclick="GoBack">Back</button>
 
     @if (logs == null)
@@ -267,6 +268,8 @@ else
         public decimal Litres { get; set; }
         public string? Consumption { get; set; }
     }
+
+    private void GoToExport() => Nav.NavigateTo($"vehicles/{Id}/export");
 
     protected override async Task OnInitializedAsync()
     {
