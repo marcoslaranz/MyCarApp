@@ -25,11 +25,11 @@ builder.Services.AddScoped(sp =>
 
 
 // Add JSON options with custom DateTime converter
-builder.Services.Configure<Microsoft.AspNetCore.Components.WebAssembly.Http.WebAssemblyHttpRequestMessageOptions>(options => { });
+//builder.Services.Configure<Microsoft.AspNetCore.Components.WebAssembly.Http.WebAssemblyHttpRequestMessageOptions>(options => { });
 
-var jsonOptions = new JsonSerializerOptions();
-jsonOptions.Converters.Add(new MyCarApp.Client.Models.UnspecifiedDateTimeConverter());
-builder.Services.AddSingleton(jsonOptions);
+//var jsonOptions = new JsonSerializerOptions();
+//jsonOptions.Converters.Add(new MyCarApp.Client.Models.UnspecifiedDateTimeConverter());
+//builder.Services.AddSingleton(jsonOptions);
 
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<VehicleService>();
