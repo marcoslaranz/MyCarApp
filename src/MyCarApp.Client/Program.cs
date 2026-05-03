@@ -10,25 +10,6 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped<NavigationService>();
 
-/*
-builder.Services.AddScoped(sp => new HttpClient
-{
-    BaseAddress = new Uri("http://192.168.20.15:5236/")
-});
-*/
-
-/*
-builder.Services.AddScoped(sp =>
-{
-    var navigationManager = sp.GetRequiredService<NavigationManager>();
-    var baseUri = new Uri(navigationManager.BaseUri);
-    var apiBase = new Uri($"{baseUri.Scheme}://{baseUri.Host}:5236/");
-    
-    return new HttpClient { BaseAddress = apiBase };
-});
-*/
-
-
 builder.Services.AddScoped(sp =>
 {
     var navigationManager = sp.GetRequiredService<NavigationManager>();
@@ -42,6 +23,13 @@ builder.Services.AddScoped(sp =>
     return new HttpClient { BaseAddress = apiBase };
 });
 
+
+// Add JSON options with custom DateTime converter
+builder.Services.Configure<Microsoft.AspNetCore.Components.WebAssembly.Http.WebAssemblyHttpRequestMessageOptions>(options => { });
+
+var jsonOptions = new JsonSerializerOptions();
+jsonOptions.Converters.Add(new MyCarApp.Client.Models.UnspecifiedDateTimeConverter());
+builder.Services.AddSingleton(jsonOptions);
 
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<VehicleService>();

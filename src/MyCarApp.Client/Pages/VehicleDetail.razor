@@ -364,7 +364,8 @@ else
         {
             Id = log.Id,
             VehicleId = log.VehicleId,
-            DateTime = log.DateTime,
+            //DateTime = log.DateTime,
+            DateTime = DateTime.SpecifyKind(log.DateTime, DateTimeKind.Unspecified),
             OdometerKm = log.OdometerKm,
             FuelLoaded = log.FuelLoaded,
             FuelLiters = log.FuelLiters,
@@ -388,7 +389,7 @@ else
         var value = e.Value?.ToString();
         if (!string.IsNullOrEmpty(value) && DateTime.TryParse(value, out var dt))
         {
-            editLog!.DateTime = dt;
+            editLog!.DateTime = DateTime.SpecifyKind(dt, DateTimeKind.Unspecified);
             editDateTimeValue = value;
         }
     }

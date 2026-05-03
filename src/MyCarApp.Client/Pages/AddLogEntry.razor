@@ -73,7 +73,7 @@ else
     {
         // Set current datetime
         var now = DateTime.Now;
-        log.DateTime = now;
+        log.DateTime = DateTime.SpecifyKind(now, DateTimeKind.Unspecified);
         dateTimeValue = now.ToString("yyyy-MM-ddTHH:mm");
 
         // Load last odometer reading
@@ -93,7 +93,8 @@ else
         var value = e.Value?.ToString();
         if (!string.IsNullOrEmpty(value) && DateTime.TryParse(value, out var dt))
         {
-            log.DateTime = dt;
+            // Force Unspecified kind to prevent UTC conversion
+            log.DateTime = DateTime.SpecifyKind(dt, DateTimeKind.Unspecified);
             dateTimeValue = value;
         }
     }

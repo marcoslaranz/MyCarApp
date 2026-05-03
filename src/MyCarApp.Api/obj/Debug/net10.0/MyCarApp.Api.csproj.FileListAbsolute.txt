@@ -63,6 +63,9 @@ D:\Projects\MyCarApp\src\MyCarApp.Api\bin\Debug\net10.0\NuGet.Packaging.dll
 D:\Projects\MyCarApp\src\MyCarApp.Api\bin\Debug\net10.0\NuGet.ProjectModel.dll
 D:\Projects\MyCarApp\src\MyCarApp.Api\bin\Debug\net10.0\NuGet.Protocol.dll
 D:\Projects\MyCarApp\src\MyCarApp.Api\bin\Debug\net10.0\NuGet.Versioning.dll
+D:\Projects\MyCarApp\src\MyCarApp.Api\bin\Debug\net10.0\Swashbuckle.AspNetCore.Swagger.dll
+D:\Projects\MyCarApp\src\MyCarApp.Api\bin\Debug\net10.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+D:\Projects\MyCarApp\src\MyCarApp.Api\bin\Debug\net10.0\Swashbuckle.AspNetCore.SwaggerUI.dll
 D:\Projects\MyCarApp\src\MyCarApp.Api\bin\Debug\net10.0\System.CodeDom.dll
 D:\Projects\MyCarApp\src\MyCarApp.Api\bin\Debug\net10.0\System.Composition.AttributedModel.dll
 D:\Projects\MyCarApp\src\MyCarApp.Api\bin\Debug\net10.0\System.Composition.Convention.dll
@@ -233,6 +236,7 @@ D:\Projects\MyCarApp\src\MyCarApp.Api\obj\Debug\net10.0\MyCarApp.Api.AssemblyInf
 D:\Projects\MyCarApp\src\MyCarApp.Api\obj\Debug\net10.0\MyCarApp.Api.csproj.CoreCompileInputs.cache
 D:\Projects\MyCarApp\src\MyCarApp.Api\obj\Debug\net10.0\MyCarApp.Api.MvcApplicationPartsAssemblyInfo.cs
 D:\Projects\MyCarApp\src\MyCarApp.Api\obj\Debug\net10.0\MyCarApp.Api.MvcApplicationPartsAssemblyInfo.cache
+D:\Projects\MyCarApp\src\MyCarApp.Api\obj\Debug\net10.0\MyCarApp.Api.sourcelink.json
 D:\Projects\MyCarApp\src\MyCarApp.Api\obj\Debug\net10.0\rjimswa.dswa.cache.json
 D:\Projects\MyCarApp\src\MyCarApp.Api\obj\Debug\net10.0\rjsmrazor.dswa.cache.json
 D:\Projects\MyCarApp\src\MyCarApp.Api\obj\Debug\net10.0\rjsmcshtml.dswa.cache.json
@@ -310,7 +314,3 @@ D:\Projects\MyCarApp\src\MyCarApp.Api\obj\Debug\net10.0\refint\MyCarApp.Api.dll
 D:\Projects\MyCarApp\src\MyCarApp.Api\obj\Debug\net10.0\MyCarApp.Api.pdb
 D:\Projects\MyCarApp\src\MyCarApp.Api\obj\Debug\net10.0\MyCarApp.Api.genruntimeconfig.cache
 D:\Projects\MyCarApp\src\MyCarApp.Api\obj\Debug\net10.0\ref\MyCarApp.Api.dll
-D:\Projects\MyCarApp\src\MyCarApp.Api\bin\Debug\net10.0\Swashbuckle.AspNetCore.Swagger.dll
-D:\Projects\MyCarApp\src\MyCarApp.Api\bin\Debug\net10.0\Swashbuckle.AspNetCore.SwaggerGen.dll
-D:\Projects\MyCarApp\src\MyCarApp.Api\bin\Debug\net10.0\Swashbuckle.AspNetCore.SwaggerUI.dll
-D:\Projects\MyCarApp\src\MyCarApp.Api\obj\Debug\net10.0\MyCarApp.Api.sourcelink.json
