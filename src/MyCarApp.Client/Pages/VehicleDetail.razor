@@ -30,6 +30,11 @@ else
     <button @onclick="StartEdit">Edit Vehicle</button>
     <button @onclick="GoToExport">📤 Export</button>
     <button @onclick="GoToService">🔧 Service</button>
+    <button @onclick="GoToServiceLog">🔧 Log Service</button>
+    <button @onclick="GoToServiceHistory">📋 Service History</button>
+    <button @onclick="GoToServiceSetup">⚙️ Service Setup</button>
+
+
     <button class="btn-secondary" @onclick="GoBack">Back</button>
 
     @if (logs == null)
@@ -471,4 +476,8 @@ else
     private void GoBack() => Nav.NavigateTo(Nav.BaseUri);
 
     private void GoToService() => Nav.NavigateTo($"vehicles/{Id}/service");
+
+    private void GoToServiceLog() => Nav.NavigateTo($"vehicles/{Id}/service/log");
+    private void GoToServiceHistory() => Nav.NavigateTo($"vehicles/{Id}/service/history");
+    private void GoToServiceSetup() => Nav.NavigateTo($"vehicles/{Id}/service/setup");
 }

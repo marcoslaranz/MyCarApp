@@ -1,0 +1,153 @@
+@page "/vehicles/{Id:int}/service/history"
+@inject VehicleService VehicleService
+@inject ServiceItemService ServiceItemService
+@inject ServiceLogService ServiceLogService
+@inject NavigationManager Nav
+
+<h3>Service History</h3>
+
+@if (vehicle == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <p>@vehicle.Year @vehicle.Make @vehicle.Model — @vehicle.Name</p>
+
+    <button @onclick="GoToLog">+ Log New Service</button>
+    <button @onclick="GoToSetup">⚙️ Setup</button>
+    <button class="btn-secondary" @onclick="GoBack">Back</button>
+
+    @if (serviceLogs == null)
+    {
+        <p>Loading...</p>
+    }
+    else if (!serviceLogs.Any())
+    {
+        <p style="margin-top:1rem; color:#555;">No service history yet.</p>
+    }
+    else
+    {
+        <div style="margin-top:1rem;">
+            @foreach (var log in serviceLogs)
+            {
+                <div class="service-card">
+                    <div class="service-card-header">
+                        <span class="service-card-name">
+                            @log.ServiceDate.ToString("dd/MM/yyyy")
+                        </span>
+                        <span style="font-size:0.85rem; color:#555;">
+                            @log.OdometerKm.ToString("N0") km
+                        </span>
+                        <div class="service-card-actions">
+                            <button class="btn-small" @onclick="() => ToggleExpand(log.Id)">
+                                @(expandedId == log.Id ? "▲" : "▼")
+                            </button>
+                            <button class="btn-small btn-danger-small"
+                                    @onclick="() => DeleteLog(log.Id)">🗑</button>
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(log.Notes))
+                    {
+                        <div class="service-card-notes">@log.Notes</div>
+                    }
+
+                    @if (expandedId == log.Id)
+                    {
+                        <div style="margin-top:0.75rem; border-top:1px solid #c8e6c9; padding-top:0.75rem;">
+
+                            @* Items done *@
+                            @if (log.ServiceLogItems.Any())
+                            {
+                                <div style="margin-bottom:0.75rem;">
+                                    @foreach (var item in log.ServiceLogItems)
+                                    {
+                                        var serviceItem = serviceItems.FirstOrDefault(s => s.Id == item.ServiceItemId);
+                                        <div style="display:flex; gap:0.5rem; align-items:center; margin-bottom:0.25rem;">
+                                            <span>@(item.Done ? "✅" : "⬜")</span>
+                                            <span style="font-size:0.9rem;">@(serviceItem?.Name ?? "Unknown")</span>
+                                        </div>
+                                    }
+                                </div>
+                            }
+
+                            @* Documents *@
+                            @if (log.ServiceDocuments.Any())
+                            {
+                                <div>
+                                    <p style="font-weight:700; font-size:0.85rem; margin-bottom:0.5rem;">Documents</p>
+                                    @foreach (var doc in log.ServiceDocuments)
+                                    {
+                                        <div class="service-doc-item">
+                                            <span>📄 @doc.FileName</span>
+                                            <a href="@doc.FileUrl" target="_blank"
+                                               style="font-size:0.85rem; color:#2e7d32;">View</a>
+                                        </div>
+                                    }
+                                </div>
+                            }
+
+                            @* Upload more documents *@
+                            <div style="margin-top:0.75rem;">
+                                <InputFile OnChange="e => HandleFileUpload(e, log.Id)"
+                                           accept=".pdf,.jpg,.jpeg,.png" />
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    }
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    private Vehicle? vehicle;
+    private List<ServiceLog>? serviceLogs;
+    private List<ServiceItem> serviceItems = new();
+    private int? expandedId = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var vehicles = await VehicleService.GetVehiclesAsync();
+        vehicle = vehicles.FirstOrDefault(v => v.Id == Id);
+        serviceItems = await ServiceItemService.GetServiceItemsAsync(Id);
+        await LoadLogs();
+    }
+
+    private async Task LoadLogs()
+    {
+        serviceLogs = await ServiceLogService.GetServiceLogsAsync(Id);
+    }
+
+    private void ToggleExpand(int logId)
+    {
+        expandedId = expandedId == logId ? null : logId;
+    }
+
+    private async Task DeleteLog(int logId)
+    {
+        var success = await ServiceLogService.DeleteServiceLogAsync(Id, logId);
+        if (success) await LoadLogs();
+    }
+
+    private async Task HandleFileUpload(InputFileChangeEventArgs e, int logId)
+    {
+        foreach (var file in e.GetMultipleFiles(5))
+        {
+            var allowedTypes = new[] { "image/jpeg", "image/png", "application/pdf" };
+            if (!allowedTypes.Contains(file.ContentType)) continue;
+
+            using var stream = file.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024);
+            await ServiceLogService.UploadDocumentAsync(
+                Id, logId, stream, file.Name, file.ContentType);
+        }
+        await LoadLogs();
+    }
+
+    private void GoToLog() => Nav.NavigateTo($"vehicles/{Id}/service/log");
+    private void GoToSetup() => Nav.NavigateTo($"vehicles/{Id}/service/setup");
+    private void GoBack() => Nav.NavigateTo($"vehicles/{Id}");
+}

@@ -1,0 +1,155 @@
+@page "/vehicles/{Id:int}/service/setup"
+@inject VehicleService VehicleService
+@inject ServiceItemService ServiceItemService
+@inject NavigationManager Nav
+
+<h3>Service Setup</h3>
+
+@if (vehicle == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <p>@vehicle.Year @vehicle.Make @vehicle.Model — @vehicle.Name</p>
+
+    <button @onclick="ShowAddForm">+ Add Service Item</button>
+    <button class="btn-secondary" @onclick="GoBack">Back</button>
+
+    @if (showForm)
+    {
+        <div class="service-form">
+            <h3 style="font-size:1.1rem;">@(editingItem == null ? "New Service Item" : "Edit Service Item")</h3>
+            <div><label>Name</label><input @bind="formItem.Name" placeholder="e.g. Oil Change" /></div>
+            <div><label>Interval (KMs)</label><input @bind="formItem.IntervalKm" type="number" placeholder="e.g. 10000" /></div>
+            <div><label>Interval (Months)</label><input @bind="formItem.IntervalMonths" type="number" placeholder="e.g. 6" /></div>
+
+            @if (!string.IsNullOrEmpty(formError))
+            {
+                <p style="color:red">@formError</p>
+            }
+
+            <button @onclick="HandleSave">Save</button>
+            <button class="btn-secondary" @onclick="CancelForm">Cancel</button>
+        </div>
+    }
+
+    @if (serviceItems.Any())
+    {
+        <div style="margin-top:1rem;">
+            @foreach (var item in serviceItems)
+            {
+                <div class="service-card">
+                    <div class="service-card-header">
+                        <span class="service-card-name">@item.Name</span>
+                        <div class="service-card-actions">
+                            <button class="btn-small" @onclick="() => StartEdit(item)">✏️</button>
+                            <button class="btn-small btn-danger-small" @onclick="() => DeleteItem(item.Id)">🗑</button>
+                        </div>
+                    </div>
+                    <div class="service-card-details">
+                        @if (item.IntervalKm.HasValue)
+                        {
+                            <span>Every @item.IntervalKm.Value.ToString("N0") km</span>
+                        }
+                        @if (item.IntervalMonths.HasValue)
+                        {
+                            <span>Every @item.IntervalMonths.Value months</span>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else if (!showForm)
+    {
+        <p style="margin-top:1rem; color:#555;">No service items yet. Add your first one!</p>
+    }
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    private Vehicle? vehicle;
+    private List<ServiceItem> serviceItems = new();
+    private bool showForm = false;
+    private ServiceItem formItem = new();
+    private ServiceItem? editingItem = null;
+    private string formError = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var vehicles = await VehicleService.GetVehiclesAsync();
+        vehicle = vehicles.FirstOrDefault(v => v.Id == Id);
+        await LoadItems();
+    }
+
+    private async Task LoadItems()
+    {
+        serviceItems = await ServiceItemService.GetServiceItemsAsync(Id);
+    }
+
+    private void ShowAddForm()
+    {
+        formItem = new ServiceItem { VehicleId = Id };
+        editingItem = null;
+        showForm = true;
+        formError = string.Empty;
+    }
+
+    private void StartEdit(ServiceItem item)
+    {
+        editingItem = item;
+        formItem = new ServiceItem
+        {
+            Id = item.Id,
+            VehicleId = item.VehicleId,
+            Name = item.Name,
+            IntervalKm = item.IntervalKm,
+            IntervalMonths = item.IntervalMonths
+        };
+        showForm = true;
+        formError = string.Empty;
+    }
+
+    private void CancelForm()
+    {
+        showForm = false;
+        editingItem = null;
+        formError = string.Empty;
+    }
+
+    private async Task HandleSave()
+    {
+        if (string.IsNullOrWhiteSpace(formItem.Name))
+        {
+            formError = "Name is required.";
+            return;
+        }
+
+        bool success;
+        if (editingItem == null)
+            success = await ServiceItemService.CreateServiceItemAsync(Id, formItem);
+        else
+            success = await ServiceItemService.UpdateServiceItemAsync(Id, formItem);
+
+        if (success)
+        {
+            showForm = false;
+            editingItem = null;
+            await LoadItems();
+        }
+        else
+        {
+            formError = "Failed to save. Please try again.";
+        }
+    }
+
+    private async Task DeleteItem(int itemId)
+    {
+        var success = await ServiceItemService.DeleteServiceItemAsync(Id, itemId);
+        if (success) await LoadItems();
+    }
+
+    private void GoBack() => Nav.NavigateTo($"vehicles/{Id}");
+}
