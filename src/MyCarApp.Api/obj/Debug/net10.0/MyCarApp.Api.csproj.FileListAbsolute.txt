@@ -314,3 +314,4 @@ D:\Projects\MyCarApp\src\MyCarApp.Api\obj\Debug\net10.0\refint\MyCarApp.Api.dll
 D:\Projects\MyCarApp\src\MyCarApp.Api\obj\Debug\net10.0\MyCarApp.Api.pdb
 D:\Projects\MyCarApp\src\MyCarApp.Api\obj\Debug\net10.0\MyCarApp.Api.genruntimeconfig.cache
 D:\Projects\MyCarApp\src\MyCarApp.Api\obj\Debug\net10.0\ref\MyCarApp.Api.dll
+D:\Projects\MyCarApp\src\MyCarApp.Api\bin\Debug\net10.0\CloudinaryDotNet.dll

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using MyCarApp.Api.Data;
+using CloudinaryDotNet;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -101,6 +102,17 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod());
 });
 */
+
+
+// Cloudinary
+var cloudinarySettings = builder.Configuration.GetSection("Cloudinary");
+var cloudinary = new CloudinaryDotNet.Cloudinary(new CloudinaryDotNet.Account(
+    cloudinarySettings["CloudName"],
+    cloudinarySettings["ApiKey"],
+    cloudinarySettings["ApiSecret"]
+));
+cloudinary.Api.Secure = true;
+builder.Services.AddSingleton(cloudinary);
 
 
 var app = builder.Build();
