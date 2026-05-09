@@ -10,6 +10,8 @@ public class AppDbContext : IdentityDbContext
     {
     }
 
+    public DbSet<ServiceItem> ServiceItems { get; set; }
+
     public DbSet<Vehicle> Vehicles { get; set; }
     public DbSet<LogEntry> LogEntries { get; set; }
 
@@ -46,6 +48,17 @@ public class AppDbContext : IdentityDbContext
 
         builder.Entity<LogEntry>()
             .Property(l => l.FuelTotalPaid)
+            .HasPrecision(10, 2);
+
+            // ServiceItem belongs to a Vehicle
+        builder.Entity<ServiceItem>()
+            .HasOne<Vehicle>()
+            .WithMany()
+            .HasForeignKey(s => s.VehicleId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<ServiceItem>()
+            .Property(s => s.LastServiceKm)
             .HasPrecision(10, 2);
     }
 }
