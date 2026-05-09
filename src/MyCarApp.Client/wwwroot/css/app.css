@@ -287,3 +287,88 @@ button.btn-danger:hover {
     font-weight: 800;
     color: #2e7d32;
 }
+
+/* ── Service Cards ── */
+.service-card {
+    background: #fff;
+    border: 2px solid #c8e6c9;
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+    margin-bottom: 0.75rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.service-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.4rem;
+}
+
+.service-card-emoji { font-size: 1.2rem; }
+
+.service-card-name {
+    font-weight: 800;
+    font-size: 1rem;
+    flex: 1;
+}
+
+.service-card-actions {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.btn-small {
+    background: #e8f5e9;
+    color: #2e7d32;
+    border: none;
+    border-radius: 6px;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.85rem;
+    cursor: pointer;
+    margin: 0;
+}
+
+.btn-danger-small {
+    background: #ffebee;
+    color: #c62828;
+}
+
+.service-card-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: #555;
+    margin-bottom: 0.25rem;
+}
+
+.service-card-status {
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+.service-card-notes {
+    font-size: 0.8rem;
+    color: #777;
+    margin-top: 0.25rem;
+    font-style: italic;
+}
+
+.service-form {
+    background: #f1f8f1;
+    border: 2px solid #c8e6c9;
+    border-radius: 10px;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+/* ── Service Badge ── */
+.service-badge {
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.25rem 0.6rem;
+    border-radius: 20px;
+    white-space: nowrap;
+}

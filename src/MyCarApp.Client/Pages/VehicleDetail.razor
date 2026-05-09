@@ -29,6 +29,7 @@ else
     <button @onclick="GoToAddLog">+ Add Log Entry</button>
     <button @onclick="StartEdit">Edit Vehicle</button>
     <button @onclick="GoToExport">📤 Export</button>
+    <button @onclick="GoToService">🔧 Service</button>
     <button class="btn-secondary" @onclick="GoBack">Back</button>
 
     @if (logs == null)
@@ -468,4 +469,6 @@ else
 
     private void GoToAddLog() => Nav.NavigateTo($"vehicles/{Id}/logs/add");
     private void GoBack() => Nav.NavigateTo(Nav.BaseUri);
+
+    private void GoToService() => Nav.NavigateTo($"vehicles/{Id}/service");
 }

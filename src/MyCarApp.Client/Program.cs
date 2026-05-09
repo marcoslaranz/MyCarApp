@@ -34,5 +34,7 @@ builder.Services.AddScoped(sp =>
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<VehicleService>();
 builder.Services.AddScoped<LogEntryService>();
+builder.Services.AddScoped<ServiceItemService>();
+
 
 await builder.Build().RunAsync();

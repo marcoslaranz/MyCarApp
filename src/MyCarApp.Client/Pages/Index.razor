@@ -3,6 +3,9 @@
 @inject AuthService Auth
 @inject NavigationService NavService
 
+@inject ServiceItemService ServiceItemService
+@inject LogEntryService LogService
+
 <h3>My Vehicles</h3>
 
 <button @onclick="GoToAddVehicle">+ Add Vehicle</button>
@@ -17,12 +20,19 @@ else if (!vehicles.Any())
 }
 else
 {
-    <ul>
+     <ul>
         @foreach (var vehicle in vehicles)
         {
             <li>
-                <a href="@NavService.GetPath($"vehicles/{vehicle.Id}")">
-                    @vehicle.Year @vehicle.Make @vehicle.Model — @vehicle.Name
+                <a href="vehicles/@vehicle.Id">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span>@vehicle.Year @vehicle.Make @vehicle.Model — @vehicle.Name</span>
+                        @if (vehicleBadges.ContainsKey(vehicle.Id))
+                        {
+                            var badge = vehicleBadges[vehicle.Id];
+                            <span class="service-badge" style="background:@badge.Color">@badge.Label</span>
+                        }
+                    </div>
                 </a>
             </li>
         }
@@ -31,19 +41,56 @@ else
 
 @code {
     private List<Vehicle>? vehicles;
-
+/*
     protected override async Task OnInitializedAsync()
     {
         var loggedIn = await Auth.IsLoggedInAsync();
         if (!loggedIn) { NavService.NavigateTo("login"); return; }
         vehicles = await VehicleService.GetVehiclesAsync();
     }
-
+*/
     private void GoToAddVehicle() => NavService.NavigateTo("vehicles/add");
 
     private async Task HandleLogout()
     {
         await Auth.Logout();
         NavService.NavigateTo("login");
+    }
+
+    private record BadgeInfo(string Label, string Color);
+    private Dictionary<int, BadgeInfo> vehicleBadges = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var loggedIn = await Auth.IsLoggedInAsync();
+        if (!loggedIn) { NavService.NavigateTo("login"); return; }
+
+        vehicles = await VehicleService.GetVehiclesAsync();
+        await LoadBadges();
+    }
+
+    private async Task LoadBadges()
+    {
+        vehicleBadges.Clear();
+        if (vehicles == null) return;
+
+        foreach (var vehicle in vehicles)
+        {
+            var logs = await LogService.GetLogsAsync(vehicle.Id);
+            var currentKm = logs.Any()
+                ? logs.OrderByDescending(l => l.DateTime).First().OdometerKm
+                : 0;
+
+            var items = await ServiceItemService.GetServiceItemsAsync(vehicle.Id);
+            var statuses = items.Select(i => ServiceStatusCalculator.Calculate(i, currentKm)).ToList();
+
+            var overdueCount = statuses.Count(s => s.Status == "overdue");
+            var dueSoonCount = statuses.Count(s => s.Status == "dueSoon");
+
+            if (overdueCount > 0)
+                vehicleBadges[vehicle.Id] = new BadgeInfo($"🔴 {overdueCount} overdue", "#c62828");
+            else if (dueSoonCount > 0)
+                vehicleBadges[vehicle.Id] = new BadgeInfo($"🟡 {dueSoonCount} due soon", "#e65100");
+        }
     }
 }

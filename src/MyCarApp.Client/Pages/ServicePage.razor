@@ -1,0 +1,204 @@
+@page "/vehicles/{Id:int}/service"
+@inject VehicleService VehicleService
+@inject ServiceItemService ServiceItemService
+@inject LogEntryService LogService
+@inject NavigationManager Nav
+
+<h3>Service Tracker</h3>
+
+@if (vehicle == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <p>@vehicle.Year @vehicle.Make @vehicle.Model — @vehicle.Name</p>
+    <p style="color:#555; font-size:0.85rem;">Current odometer: <strong>@currentKm.ToString("N0") km</strong></p>
+
+    <button @onclick="ShowAddForm">+ Add Service Item</button>
+    <button class="btn-secondary" @onclick="GoBack">Back</button>
+
+    @if (showForm)
+    {
+        <div class="service-form">
+            <h3 style="font-size:1.1rem;">@(editingItem == null ? "New Service Item" : "Edit Service Item")</h3>
+
+            <div><label>Name</label><input @bind="formItem.Name" placeholder="e.g. Oil Change" /></div>
+            <div><label>Last Service Date</label><input @bind="formItem.LastServiceDate" type="date" /></div>
+            <div><label>Last Service KM</label><input @bind="formItem.LastServiceKm" type="number" placeholder="e.g. 180000" /></div>
+            <div><label>Interval (KMs)</label><input @bind="formItem.IntervalKm" type="number" placeholder="e.g. 10000" /></div>
+            <div><label>Interval (Months)</label><input @bind="formItem.IntervalMonths" type="number" placeholder="e.g. 6" /></div>
+            <div><label>Notes</label><input @bind="formItem.Notes" placeholder="Optional notes" /></div>
+
+            @if (!string.IsNullOrEmpty(formError))
+            {
+                <p style="color:red">@formError</p>
+            }
+
+            <button @onclick="HandleSave">Save</button>
+            <button class="btn-secondary" @onclick="CancelForm">Cancel</button>
+        </div>
+    }
+
+    @if (serviceStatuses.Any())
+    {
+        <div style="margin-top:1rem;">
+            @foreach (var status in serviceStatuses.OrderBy(s => s.Status == "overdue" ? 0 : s.Status == "dueSoon" ? 1 : 2))
+            {
+                <div class="service-card">
+                    <div class="service-card-header">
+                        <span class="service-card-emoji">@status.StatusEmoji</span>
+                        <span class="service-card-name">@status.Item.Name</span>
+                        <div class="service-card-actions">
+                            <button class="btn-small" @onclick="() => StartEdit(status.Item)">✏️</button>
+                            <button class="btn-small btn-danger-small" @onclick="() => MarkServiced(status.Item)">✅</button>
+                            <button class="btn-small btn-danger-small" @onclick="() => DeleteItem(status.Item.Id)">🗑</button>
+                        </div>
+                    </div>
+                    <div class="service-card-details">
+                        @if (status.Item.LastServiceDate.HasValue)
+                        {
+                            <span>Last: @status.Item.LastServiceDate.Value.ToString("dd/MM/yyyy")</span>
+                        }
+                        @if (status.Item.LastServiceKm.HasValue)
+                        {
+                            <span>@status.Item.LastServiceKm.Value.ToString("N0") km</span>
+                        }
+                        @if (status.Item.IntervalKm.HasValue || status.Item.IntervalMonths.HasValue)
+                        {
+                            <span>
+                                Every
+                                @if (status.Item.IntervalKm.HasValue) { <span>@status.Item.IntervalKm.Value.ToString("N0") km</span> }
+                                @if (status.Item.IntervalKm.HasValue && status.Item.IntervalMonths.HasValue) { <span> / </span> }
+                                @if (status.Item.IntervalMonths.HasValue) { <span>@status.Item.IntervalMonths.Value mo</span> }
+                            </span>
+                        }
+                    </div>
+                    <div class="service-card-status" style="color:@status.StatusColor">
+                        @status.StatusLabel
+                    </div>
+                    @if (!string.IsNullOrEmpty(status.Item.Notes))
+                    {
+                        <div class="service-card-notes">@status.Item.Notes</div>
+                    }
+                </div>
+            }
+        </div>
+    }
+    else if (!showForm)
+    {
+        <p style="margin-top:1rem; color:#555;">No service items yet. Add your first one!</p>
+    }
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    private Vehicle? vehicle;
+    private List<ServiceItem> serviceItems = new();
+    private List<ServiceStatus> serviceStatuses = new();
+    private decimal currentKm = 0;
+
+    private bool showForm = false;
+    private ServiceItem formItem = new();
+    private ServiceItem? editingItem = null;
+    private string formError = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var vehicles = await VehicleService.GetVehiclesAsync();
+        vehicle = vehicles.FirstOrDefault(v => v.Id == Id);
+
+        var logs = await LogService.GetLogsAsync(Id);
+        currentKm = logs.Any()
+            ? logs.OrderByDescending(l => l.DateTime).First().OdometerKm
+            : 0;
+
+        await LoadServiceItems();
+    }
+
+    private async Task LoadServiceItems()
+    {
+        serviceItems = await ServiceItemService.GetServiceItemsAsync(Id);
+        serviceStatuses = serviceItems
+            .Select(item => ServiceStatusCalculator.Calculate(item, currentKm))
+            .ToList();
+    }
+
+    private void ShowAddForm()
+    {
+        formItem = new ServiceItem { VehicleId = Id };
+        editingItem = null;
+        showForm = true;
+        formError = string.Empty;
+    }
+
+    private void StartEdit(ServiceItem item)
+    {
+        editingItem = item;
+        formItem = new ServiceItem
+        {
+            Id = item.Id,
+            VehicleId = item.VehicleId,
+            Name = item.Name,
+            LastServiceDate = item.LastServiceDate,
+            LastServiceKm = item.LastServiceKm,
+            IntervalKm = item.IntervalKm,
+            IntervalMonths = item.IntervalMonths,
+            Notes = item.Notes
+        };
+        showForm = true;
+        formError = string.Empty;
+    }
+
+    private void CancelForm()
+    {
+        showForm = false;
+        editingItem = null;
+        formError = string.Empty;
+    }
+
+    private async Task HandleSave()
+    {
+        if (string.IsNullOrWhiteSpace(formItem.Name))
+        {
+            formError = "Name is required.";
+            return;
+        }
+
+        bool success;
+        if (editingItem == null)
+            success = await ServiceItemService.CreateServiceItemAsync(Id, formItem);
+        else
+            success = await ServiceItemService.UpdateServiceItemAsync(Id, formItem);
+
+        if (success)
+        {
+            showForm = false;
+            editingItem = null;
+            await LoadServiceItems();
+        }
+        else
+        {
+            formError = "Failed to save. Please try again.";
+        }
+    }
+
+    private async Task MarkServiced(ServiceItem item)
+    {
+        item.LastServiceDate = DateTime.Today;
+        item.LastServiceKm = currentKm;
+        var success = await ServiceItemService.UpdateServiceItemAsync(Id, item);
+        if (success)
+            await LoadServiceItems();
+    }
+
+    private async Task DeleteItem(int itemId)
+    {
+        var success = await ServiceItemService.DeleteServiceItemAsync(Id, itemId);
+        if (success)
+            await LoadServiceItems();
+    }
+
+    private void GoBack() => Nav.NavigateTo($"vehicles/{Id}");
+}
