@@ -60,5 +60,6 @@ public class AppDbContext : IdentityDbContext
         builder.Entity<ServiceItem>()
             .Property(s => s.LastServiceKm)
             .HasPrecision(10, 2);
+            
     }
 }
