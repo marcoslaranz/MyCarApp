@@ -1,0 +1,193 @@
+@page "/vehicles/{Id:int}/service/log"
+@inject VehicleService VehicleService
+@inject ServiceItemService ServiceItemService
+@inject ServiceLogService ServiceLogService
+@inject LogEntryService LogService
+@inject NavigationManager Nav
+
+<h3>Log a Service</h3>
+
+@if (vehicle == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <p>@vehicle.Year @vehicle.Make @vehicle.Model — @vehicle.Name</p>
+
+    <div>
+        <label>Service Date</label>
+        <input @bind="log.ServiceDate" type="date" />
+    </div>
+    <div>
+        <label>Odometer (km)</label>
+        @if (lastKm > 0)
+        {
+            <p style="color:#2e7d32; font-size:0.85rem; margin-bottom:0.3rem;">
+                Last recorded: @lastKm.ToString("N0") km
+            </p>
+        }
+        <input @bind="log.OdometerKm" type="number" placeholder="e.g. 182000" />
+    </div>
+    <div>
+        <label>Notes</label>
+        <input @bind="log.Notes" placeholder="Optional notes" />
+    </div>
+
+    @if (serviceItems.Any())
+    {
+        <div style="margin-top:1rem;">
+            <label>Items Serviced</label>
+            @foreach (var item in serviceItems)
+            {
+                var logItem = logItems.First(l => l.ServiceItemId == item.Id);
+                <div class="service-check-item">
+                    <input type="checkbox" id="item_@item.Id"
+                           @bind="logItem.Done" />
+                    <label for="item_@item.Id" style="margin:0; text-transform:none; font-size:1rem;">
+                        @item.Name
+                        @if (item.IntervalKm.HasValue || item.IntervalMonths.HasValue)
+                        {
+                            <span style="color:#555; font-size:0.8rem;">
+                                (every
+                                @if (item.IntervalKm.HasValue) { <span>@item.IntervalKm.Value.ToString("N0") km</span> }
+                                @if (item.IntervalKm.HasValue && item.IntervalMonths.HasValue) { <span>/</span> }
+                                @if (item.IntervalMonths.HasValue) { <span>@item.IntervalMonths.Value mo</span> }
+                                )
+                            </span>
+                        }
+                    </label>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <p style="color:#555; margin-top:1rem;">
+            No service items set up yet.
+            <a @onclick="GoToSetup" style="cursor:pointer;">Set up service items</a>
+        </p>
+    }
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <p style="color:red">@errorMessage</p>
+    }
+
+    @if (!string.IsNullOrEmpty(successMessage))
+    {
+        <p style="color:#2e7d32; font-weight:700;">@successMessage</p>
+    }
+
+    <button @onclick="HandleSave" disabled="@saving">
+        @(saving ? "Saving..." : "Save Service Log")
+    </button>
+    <button class="btn-secondary" @onclick="GoBack">Cancel</button>
+
+    @if (savedLogId > 0)
+    {
+        <div style="margin-top:1rem;">
+            <p style="font-weight:700;">Upload Documents (optional)</p>
+            <p style="font-size:0.85rem; color:#555;">Upload invoices or service documents (PDF, JPG, PNG)</p>
+            <InputFile OnChange="HandleFileUpload" accept=".pdf,.jpg,.jpeg,.png" multiple />
+
+            @if (uploadedDocs.Any())
+            {
+                <div style="margin-top:0.75rem;">
+                    @foreach (var doc in uploadedDocs)
+                    {
+                        <div class="service-doc-item">
+                            <span>📄 @doc.FileName</span>
+                            <a href="@doc.FileUrl" target="_blank" style="font-size:0.85rem;">View</a>
+                        </div>
+                    }
+                </div>
+            }
+
+            <button class="btn-secondary" style="margin-top:0.75rem;" @onclick="GoToHistory">
+                Done → View History
+            </button>
+        </div>
+    }
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    private Vehicle? vehicle;
+    private List<ServiceItem> serviceItems = new();
+    private List<ServiceLogItem> logItems = new();
+    private ServiceLog log = new() { ServiceDate = DateTime.Today };
+    private decimal lastKm = 0;
+    private bool saving = false;
+    private string errorMessage = string.Empty;
+    private string successMessage = string.Empty;
+    private int savedLogId = 0;
+    private List<ServiceDocument> uploadedDocs = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var vehicles = await VehicleService.GetVehiclesAsync();
+        vehicle = vehicles.FirstOrDefault(v => v.Id == Id);
+
+        var logs = await LogService.GetLogsAsync(Id);
+        lastKm = logs.Any()
+            ? logs.OrderByDescending(l => l.DateTime).First().OdometerKm
+            : 0;
+
+        serviceItems = await ServiceItemService.GetServiceItemsAsync(Id);
+        logItems = serviceItems.Select(i => new ServiceLogItem
+        {
+            ServiceItemId = i.Id,
+            Done = false
+        }).ToList();
+    }
+
+    private async Task HandleSave()
+    {
+        if (log.OdometerKm <= 0)
+        {
+            errorMessage = "Please enter the odometer reading.";
+            return;
+        }
+
+        saving = true;
+        errorMessage = string.Empty;
+
+        var success = await ServiceLogService.CreateServiceLogAsync(Id, log, logItems);
+
+        if (success)
+        {
+            var serviceLogs = await ServiceLogService.GetServiceLogsAsync(Id);
+            savedLogId = serviceLogs.FirstOrDefault()?.Id ?? 0;
+            successMessage = "✅ Service logged successfully! You can now upload documents.";
+        }
+        else
+        {
+            errorMessage = "Failed to save service log.";
+        }
+
+        saving = false;
+    }
+
+    private async Task HandleFileUpload(InputFileChangeEventArgs e)
+    {
+        foreach (var file in e.GetMultipleFiles(5))
+        {
+            var allowedTypes = new[] { "image/jpeg", "image/png", "application/pdf" };
+            if (!allowedTypes.Contains(file.ContentType)) continue;
+
+            using var stream = file.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024);
+            var doc = await ServiceLogService.UploadDocumentAsync(
+                Id, savedLogId, stream, file.Name, file.ContentType);
+
+            if (doc != null)
+                uploadedDocs.Add(doc);
+        }
+        StateHasChanged();
+    }
+
+    private void GoToSetup() => Nav.NavigateTo($"vehicles/{Id}/service/setup");
+    private void GoToHistory() => Nav.NavigateTo($"vehicles/{Id}/service/history");
+    private void GoBack() => Nav.NavigateTo($"vehicles/{Id}");
+}
