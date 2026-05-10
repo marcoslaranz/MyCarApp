@@ -1,5 +1,5 @@
 self.assetsManifest = {
-  "version": "c7z+qLXr",
+  "version": "3cFklvy3",
   "assets": [
     {
       "hash": "sha256-9eTfrfj0jB2Q1Y5KfxWbX2C7URJ1t/kJsmyr95z49g8=",
@@ -150,12 +150,12 @@ self.assetsManifest = {
       "url": "_framework/Microsoft.Win32.Registry.q7ygiwmrdj.wasm"
     },
     {
-      "hash": "sha256-cZ3vy1EAyauiFxqPm/I22JKzXbaoMROyOAP1flo26R8=",
-      "url": "_framework/MyCarApp.Client.rpjv5ae6rz.wasm"
+      "hash": "sha256-cuyglsQRy0wOcHAH7wJl+FoSjlsDEPBLQAayIJobIb0=",
+      "url": "_framework/MyCarApp.Client.2wnyrh29tx.pdb"
     },
     {
-      "hash": "sha256-iB3G7LKSDMW1Z4ZqNoUJRarYVfyhch1vgOiPn/rhB00=",
-      "url": "_framework/MyCarApp.Client.wmkk1vgj8o.pdb"
+      "hash": "sha256-cbabculQbR7auIlCdF/k/UuyXp14KdcKxEFcB43gP38=",
+      "url": "_framework/MyCarApp.Client.f0wm2jllv4.wasm"
     },
     {
       "hash": "sha256-sRW1CuOSMPHZ9tQYY0qRcO6LkDiImBs+lIkUNU/YcKM=",
@@ -822,10 +822,6 @@ self.assetsManifest = {
       "url": "_framework/blazor.webassembly.66stpp682q.js"
     },
     {
-      "hash": "sha256-GxsmeUI547WRKFmwoyJqnTO37na6hCdwYiZM3JhEDrs=",
-      "url": "_framework/dotnet.9bhpxsthhi.js"
-    },
-    {
       "hash": "sha256-ayMhmGBeFV8r4BXiGkCvE94sddqNuxpDxlMLNo8zUNQ=",
       "url": "_framework/dotnet.js.map"
     },
@@ -836,6 +832,10 @@ self.assetsManifest = {
     {
       "hash": "sha256-tlrn00yvndmJzhFdKpELUlytdgWFyGFdTWjI10bgILU=",
       "url": "_framework/dotnet.native.mx9wzm9o5h.js"
+    },
+    {
+      "hash": "sha256-M5AEk0hzGR6o7iQmMKMQkstdLvj6BjAspNCWZl1WQDU=",
+      "url": "_framework/dotnet.px180hlqq2.js"
     },
     {
       "hash": "sha256-/ndm/PF1BeBT5mXzYAES79wNK5sIZIQKAGcUqPL9ZP8=",
@@ -882,7 +882,7 @@ self.assetsManifest = {
       "url": "icon-512.png"
     },
     {
-      "hash": "sha256-Bw4imeH0+Ml9r287+qugAep+iJxdO93bR++ls1Yxu1w=",
+      "hash": "sha256-/gjz9KWCcTzBpM9GHeE9mFjqGY+P5OCmt4C6Xko7itY=",
       "url": "index.html"
     },
     {
