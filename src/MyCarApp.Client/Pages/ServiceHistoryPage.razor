@@ -91,8 +91,8 @@ else
                     <a href="@doc.FileUrl" target="_blank"
                        style="font-size:0.85rem; color:#2e7d32; font-weight:700;">View</a>
                     <button class="btn-small btn-danger-small"
-                            @onclick="() => HandleDeleteDocument(log.Id, log.VehicleId, doc.Id)"
-                            @onclick:stopPropagation="true">🗑</button>
+                        @onclick="() => HandleDeleteDocument(log.Id, doc.Id)"
+                        @onclick:stopPropagation="true">🗑</button>
                 </div>
             </div>
         }
@@ -183,9 +183,9 @@ else
         StateHasChanged();
     }
 
-    private async Task HandleDeleteDocument(int logId, int vehicleId, int docId)
+    private async Task HandleDeleteDocument(int logId, int docId)
     {
-        var success = await ServiceLogService.DeleteDocumentAsync(vehicleId, logId, docId);
+        var success = await ServiceLogService.DeleteDocumentAsync(Id, logId, docId);
         if (success) await LoadLogs();
     }
 
