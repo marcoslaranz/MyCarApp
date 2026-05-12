@@ -29,7 +29,10 @@ if (connectionString!.StartsWith("postgresql://") || connectionString.StartsWith
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
 
-
+builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 10 * 1024 * 1024; // 10MB
+});
 
 
 
@@ -86,23 +89,6 @@ builder.Services.AddCors(options =>
               .AllowAnyHeader()
               .AllowAnyMethod());
 });
-
-
-
-/*
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("BlazorClient", policy =>
-        policy.WithOrigins(
-            "https://marcoslaranz.github.io",
-            "http://localhost:5014",
-            "https://localhost:7014",
-            "http://192.168.20.15:5014")
-              .AllowAnyHeader()
-              .AllowAnyMethod());
-});
-*/
-
 
 // Cloudinary
 var cloudinarySettings = builder.Configuration.GetSection("Cloudinary");

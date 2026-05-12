@@ -53,15 +53,27 @@ public class ServiceLogService
     public async Task<ServiceDocument?> UploadDocumentAsync(int vehicleId, int serviceLogId, Stream fileStream, string fileName, string contentType)
     {
         await SetAuthHeader();
+
+        // Read stream into byte array first
+        using var ms = new MemoryStream();
+        await fileStream.CopyToAsync(ms);
+        var bytes = ms.ToArray();
+
         var content = new MultipartFormDataContent();
-        var streamContent = new StreamContent(fileStream);
-        streamContent.Headers.ContentType = new MediaTypeHeaderValue(contentType);
-        content.Add(streamContent, "file", fileName);
+        var byteContent = new ByteArrayContent(bytes);
+        byteContent.Headers.ContentType = new MediaTypeHeaderValue(contentType);
+        content.Add(byteContent, "file", fileName);
 
         var response = await _http.PostAsync(
             $"api/vehicles/{vehicleId}/servicelogs/{serviceLogId}/documents", content);
 
-        if (!response.IsSuccessStatusCode) return null;
+        if (!response.IsSuccessStatusCode)
+        {
+            var error = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"Upload failed: {response.StatusCode} - {error}");
+            return null;
+        }
+
         return await response.Content.ReadFromJsonAsync<ServiceDocument>();
     }
 
