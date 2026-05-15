@@ -16,9 +16,17 @@ builder.Services.AddScoped(sp =>
     var baseUri = new Uri(navigationManager.BaseUri);
     
     // Use Railway API in production, local API in development
+    //var apiBase = baseUri.Host.Contains("localhost") || baseUri.Host.Contains("192.168")
+    //    ? new Uri($"{baseUri.Scheme}://{baseUri.Host}:5236/")
+    //    : new Uri("https://mycarapp-production.up.railway.app/");
+
+
     var apiBase = baseUri.Host.Contains("localhost") || baseUri.Host.Contains("192.168")
         ? new Uri($"{baseUri.Scheme}://{baseUri.Host}:5236/")
-        : new Uri("https://mycarapp-production.up.railway.app/");
+        : new Uri("https://mycarapp-api.onrender.com");
+
+
+        
     
     return new HttpClient { BaseAddress = apiBase };
 });
