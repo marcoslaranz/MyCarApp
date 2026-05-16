@@ -5,31 +5,18 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using MyCarApp.Api.Data;
 using CloudinaryDotNet;
+using Npgsql; // add at top
 
 var builder = WebApplication.CreateBuilder(args);
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 // PostgreSQL + EF Core
-//builder.Services.AddDbContext<AppDbContext>(options =>
-//    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+//var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL") 
+//    ?? builder.Configuration.GetConnectionString("DefaultConnection");
 
-// PostgreSQL + EF Core
-var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL") 
-    ?? builder.Configuration.GetConnectionString("DefaultConnection");
 
-// Convert Railway postgres:// URL format to Npgsql format if needed
 /*
-if (connectionString!.StartsWith("postgresql://") || connectionString.StartsWith("postgres://"))
-{
-    var uri = new Uri(connectionString);
-    var userInfo = uri.UserInfo.Split(':');
-    connectionString = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]}";
-}
-*/
-
-
-
 if (connectionString!.StartsWith("postgresql://") || connectionString.StartsWith("postgres://"))
 {
     var uri = new Uri(connectionString);
@@ -38,14 +25,28 @@ if (connectionString!.StartsWith("postgresql://") || connectionString.StartsWith
     var password = Uri.UnescapeDataString(userInfo[1]);
     connectionString = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={username};Password={password};SSL Mode=Require;Trust Server Certificate=true";
 }
+*/
+
+
+
+
+var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL")
+    ?? builder.Configuration.GetConnectionString("DefaultConnection");
+
+if (connectionString!.StartsWith("postgresql://") || connectionString.StartsWith("postgres://"))
+{
+    var csb = new NpgsqlConnectionStringBuilder(connectionString);
+
+    // Supabase requires SSL. Pooler uses TLS as well.
+    csb.SslMode = SslMode.Require;
+
+    connectionString = csb.ConnectionString;
+}
+
+
+
 
 //postgres://postgres:[tAZ3Hh1mwiVbHKaR]@db.abcdefghijklmnopqrst.supabase.co:6543/postgres
-
-
-
-
-
-
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
@@ -54,8 +55,6 @@ builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(optio
 {
     options.MultipartBodyLengthLimit = 10 * 1024 * 1024; // 10MB
 });
-
-
 
 // ASP.NET Identity
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
