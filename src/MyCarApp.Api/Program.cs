@@ -30,14 +30,16 @@ if (connectionString!.StartsWith("postgresql://") || connectionString.StartsWith
 
 
 
-
 if (connectionString!.StartsWith("postgresql://") || connectionString.StartsWith("postgres://"))
 {
     var uri = new Uri(connectionString);
     var userInfo = uri.UserInfo.Split(':');
-    connectionString = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
+    var username = Uri.UnescapeDataString(userInfo[0]);
+    var password = Uri.UnescapeDataString(userInfo[1]);
+    connectionString = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={username};Password={password};SSL Mode=Require;Trust Server Certificate=true";
 }
 
+//postgres://postgres:[tAZ3Hh1mwiVbHKaR]@db.abcdefghijklmnopqrst.supabase.co:6543/postgres
 
 
 
