@@ -166,11 +166,5 @@ static string GetConnectionString(WebApplicationBuilder builder)
         TrustServerCertificate = true
     };
 
-    var projectRef = "tqqlxgpmsbjhnxepdmsp";
-
-    // REQUIRED FOR SUPABASE TENANT ISOLATION
-    csb.Options = $"project={projectRef}";
-
     return csb.ConnectionString;
-
 }
