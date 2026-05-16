@@ -14,36 +14,18 @@ builder.Services.AddScoped(sp =>
 {
     var navigationManager = sp.GetRequiredService<NavigationManager>();
     var baseUri = new Uri(navigationManager.BaseUri);
-    
-    // Use Railway API in production, local API in development
-    //var apiBase = baseUri.Host.Contains("localhost") || baseUri.Host.Contains("192.168")
-    //    ? new Uri($"{baseUri.Scheme}://{baseUri.Host}:5236/")
-    //    : new Uri("https://mycarapp-production.up.railway.app/");
 
+    var apiUrl = baseUri.Host.Contains("localhost") || baseUri.Host.Contains("192.168")
+        ? $"{baseUri.Scheme}://{baseUri.Host}:5236/"
+        : "https://mycarapp-api.onrender.com/";
 
-    var apiBase = baseUri.Host.Contains("localhost") || baseUri.Host.Contains("192.168")
-        ? new Uri($"{baseUri.Scheme}://{baseUri.Host}:5236/")
-        : new Uri("https://mycarapp-api.onrender.com");
-
-
-        
-    
-    return new HttpClient { BaseAddress = apiBase };
+    return new HttpClient { BaseAddress = new Uri(apiUrl) };
 });
-
-
-// Add JSON options with custom DateTime converter
-//builder.Services.Configure<Microsoft.AspNetCore.Components.WebAssembly.Http.WebAssemblyHttpRequestMessageOptions>(options => { });
-
-//var jsonOptions = new JsonSerializerOptions();
-//jsonOptions.Converters.Add(new MyCarApp.Client.Models.UnspecifiedDateTimeConverter());
-//builder.Services.AddSingleton(jsonOptions);
 
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<VehicleService>();
 builder.Services.AddScoped<LogEntryService>();
 builder.Services.AddScoped<ServiceItemService>();
 builder.Services.AddScoped<ServiceLogService>();
-
 
 await builder.Build().RunAsync();

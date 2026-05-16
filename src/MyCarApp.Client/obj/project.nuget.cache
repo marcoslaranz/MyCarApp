@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "5vMAjrpCC1Y=",
+  "dgSpecHash": "vb6l4QKUJgE=",
   "success": true,
   "projectFilePath": "D:\\Projects\\MyCarApp\\src\\MyCarApp.Client\\MyCarApp.Client.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\marco\\.nuget\\packages\\microsoft.aspnetcore.app.internal.assets\\10.0.7\\microsoft.aspnetcore.app.internal.assets.10.0.7.nupkg.sha512",
+    "C:\\Users\\marco\\.nuget\\packages\\microsoft.aspnetcore.app.internal.assets\\10.0.8\\microsoft.aspnetcore.app.internal.assets.10.0.8.nupkg.sha512",
     "C:\\Users\\marco\\.nuget\\packages\\microsoft.aspnetcore.authorization\\10.0.5\\microsoft.aspnetcore.authorization.10.0.5.nupkg.sha512",
     "C:\\Users\\marco\\.nuget\\packages\\microsoft.aspnetcore.components\\10.0.5\\microsoft.aspnetcore.components.10.0.5.nupkg.sha512",
     "C:\\Users\\marco\\.nuget\\packages\\microsoft.aspnetcore.components.analyzers\\10.0.5\\microsoft.aspnetcore.components.analyzers.10.0.5.nupkg.sha512",
@@ -15,7 +15,7 @@
     "C:\\Users\\marco\\.nuget\\packages\\microsoft.aspnetcore.components.webassembly.authentication\\10.0.5\\microsoft.aspnetcore.components.webassembly.authentication.10.0.5.nupkg.sha512",
     "C:\\Users\\marco\\.nuget\\packages\\microsoft.aspnetcore.components.webassembly.devserver\\10.0.4\\microsoft.aspnetcore.components.webassembly.devserver.10.0.4.nupkg.sha512",
     "C:\\Users\\marco\\.nuget\\packages\\microsoft.aspnetcore.metadata\\10.0.5\\microsoft.aspnetcore.metadata.10.0.5.nupkg.sha512",
-    "C:\\Users\\marco\\.nuget\\packages\\microsoft.dotnet.hotreload.webassembly.browser\\10.0.203\\microsoft.dotnet.hotreload.webassembly.browser.10.0.203.nupkg.sha512",
+    "C:\\Users\\marco\\.nuget\\packages\\microsoft.dotnet.hotreload.webassembly.browser\\10.0.204\\microsoft.dotnet.hotreload.webassembly.browser.10.0.204.nupkg.sha512",
     "C:\\Users\\marco\\.nuget\\packages\\microsoft.extensions.configuration\\10.0.5\\microsoft.extensions.configuration.10.0.5.nupkg.sha512",
     "C:\\Users\\marco\\.nuget\\packages\\microsoft.extensions.configuration.abstractions\\10.0.5\\microsoft.extensions.configuration.abstractions.10.0.5.nupkg.sha512",
     "C:\\Users\\marco\\.nuget\\packages\\microsoft.extensions.configuration.binder\\10.0.5\\microsoft.extensions.configuration.binder.10.0.5.nupkg.sha512",
@@ -36,9 +36,9 @@
     "C:\\Users\\marco\\.nuget\\packages\\microsoft.extensions.validation\\10.0.5\\microsoft.extensions.validation.10.0.5.nupkg.sha512",
     "C:\\Users\\marco\\.nuget\\packages\\microsoft.jsinterop\\10.0.5\\microsoft.jsinterop.10.0.5.nupkg.sha512",
     "C:\\Users\\marco\\.nuget\\packages\\microsoft.jsinterop.webassembly\\10.0.4\\microsoft.jsinterop.webassembly.10.0.4.nupkg.sha512",
-    "C:\\Users\\marco\\.nuget\\packages\\microsoft.net.illink.tasks\\10.0.7\\microsoft.net.illink.tasks.10.0.7.nupkg.sha512",
-    "C:\\Users\\marco\\.nuget\\packages\\microsoft.net.sdk.webassembly.pack\\10.0.7\\microsoft.net.sdk.webassembly.pack.10.0.7.nupkg.sha512",
-    "C:\\Users\\marco\\.nuget\\packages\\microsoft.netcore.app.runtime.mono.browser-wasm\\10.0.7\\microsoft.netcore.app.runtime.mono.browser-wasm.10.0.7.nupkg.sha512"
+    "C:\\Users\\marco\\.nuget\\packages\\microsoft.net.illink.tasks\\10.0.8\\microsoft.net.illink.tasks.10.0.8.nupkg.sha512",
+    "C:\\Users\\marco\\.nuget\\packages\\microsoft.net.sdk.webassembly.pack\\10.0.8\\microsoft.net.sdk.webassembly.pack.10.0.8.nupkg.sha512",
+    "C:\\Users\\marco\\.nuget\\packages\\microsoft.netcore.app.runtime.mono.browser-wasm\\10.0.8\\microsoft.netcore.app.runtime.mono.browser-wasm.10.0.8.nupkg.sha512"
   ],
   "logs": []
 }
