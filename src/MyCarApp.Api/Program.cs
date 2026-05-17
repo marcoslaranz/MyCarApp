@@ -21,7 +21,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Temporary debug
-Console.WriteLine($"DEBUG - Using connection: Host={connectionString?.Split(';').FirstOrDefault(s => s.StartsWith("Host"))}; Username={connectionString?.Split(';').FirstOrDefault(s => s.StartsWith("Username"))}");
+//Console.WriteLine($"DEBUG - Using connection: Host={connectionString?.Split(';').FirstOrDefault(s => s.StartsWith("Host"))}; Username={connectionString?.Split(';').FirstOrDefault(s => s.StartsWith("Username"))}");
 
 // Convert postgres:// URL format to Npgsql format
 //if (connectionString!.StartsWith("postgresql://") || connectionString.StartsWith("postgres://"))
