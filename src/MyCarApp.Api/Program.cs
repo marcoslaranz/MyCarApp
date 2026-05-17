@@ -11,18 +11,19 @@ var builder = WebApplication.CreateBuilder(args);
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
-var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL")
+var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL") 
     ?? builder.Configuration.GetConnectionString("DefaultConnection");
 
+// Convert postgres:// URL format to Npgsql format
 if (connectionString!.StartsWith("postgresql://") || connectionString.StartsWith("postgres://"))
 {
-    var csb = new NpgsqlConnectionStringBuilder(connectionString);
-
-    // Supabase requires SSL. Pooler uses TLS as well.
-    csb.SslMode = SslMode.Require;
-
-    connectionString = csb.ConnectionString;
+    var uri = new Uri(connectionString.Split('?')[0]); // Remove query string
+    var userInfo = uri.UserInfo.Split(':');
+    var username = Uri.UnescapeDataString(userInfo[0]);
+    var password = Uri.UnescapeDataString(userInfo[1]);
+    connectionString = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={username};Password={password};SSL Mode=Require;Trust Server Certificate=true";
 }
+
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
