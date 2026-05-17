@@ -15,6 +15,11 @@ var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING"
     ?? Environment.GetEnvironmentVariable("DATABASE_URL")
     ?? builder.Configuration.GetConnectionString("DefaultConnection");
 
+
+// Temporary debug
+Console.WriteLine($"DEBUG - Using connection: Host={connectionString?.Split(';').FirstOrDefault(s => s.StartsWith("Host"))}; Username={connectionString?.Split(';').FirstOrDefault(s => s.StartsWith("Username"))}");
+
+
 // Only convert if it's a URL format
 if (connectionString!.StartsWith("postgresql://") || connectionString.StartsWith("postgres://"))
 {
@@ -24,6 +29,7 @@ if (connectionString!.StartsWith("postgresql://") || connectionString.StartsWith
     var password = Uri.UnescapeDataString(uri.UserInfo[(colonIndex + 1)..]);
     connectionString = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={username};Password={password};SSL Mode=Require;Trust Server Certificate=true";
 }
+
 
  
 
