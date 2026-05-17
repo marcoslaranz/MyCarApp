@@ -14,13 +14,13 @@ AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL") 
     ?? builder.Configuration.GetConnectionString("DefaultConnection");
 
-// Convert postgres:// URL format to Npgsql format
 if (connectionString!.StartsWith("postgresql://") || connectionString.StartsWith("postgres://"))
 {
-    var uri = new Uri(connectionString.Split('?')[0]); // Remove query string
-    var userInfo = uri.UserInfo.Split(':');
-    var username = Uri.UnescapeDataString(userInfo[0]);
-    var password = Uri.UnescapeDataString(userInfo[1]);
+    var uri = new Uri(connectionString.Split('?')[0]);
+    // UserInfo is "username:password" — split only on first colon
+    var colonIndex = uri.UserInfo.IndexOf(':');
+    var username = Uri.UnescapeDataString(uri.UserInfo[..colonIndex]);
+    var password = Uri.UnescapeDataString(uri.UserInfo[(colonIndex + 1)..]);
     connectionString = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={username};Password={password};SSL Mode=Require;Trust Server Certificate=true";
 }
 
