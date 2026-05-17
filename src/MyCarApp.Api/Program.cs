@@ -11,27 +11,32 @@ var builder = WebApplication.CreateBuilder(args);
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
-var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING")
-    ?? Environment.GetEnvironmentVariable("DATABASE_URL")
-    ?? builder.Configuration.GetConnectionString("DefaultConnection");
+//var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING")
+//    ?? Environment.GetEnvironmentVariable("DATABASE_URL")
+//    ?? builder.Configuration.GetConnectionString("DefaultConnection");
+
+
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Temporary debug
 Console.WriteLine($"DEBUG - Using connection: Host={connectionString?.Split(';').FirstOrDefault(s => s.StartsWith("Host"))}; Username={connectionString?.Split(';').FirstOrDefault(s => s.StartsWith("Username"))}");
 
 // Convert postgres:// URL format to Npgsql format
-if (connectionString!.StartsWith("postgresql://") || connectionString.StartsWith("postgres://"))
-{
-    var uri = new Uri(connectionString.Split('?')[0]); // Remove query string
-    var userInfo = uri.UserInfo.Split(':');
-    var username = Uri.UnescapeDataString(userInfo[0]);
-    var password = Uri.UnescapeDataString(userInfo[1]);
-    connectionString = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={username};Password={password};SSL Mode=Require;Trust Server Certificate=true";
-}
+//if (connectionString!.StartsWith("postgresql://") || connectionString.StartsWith("postgres://"))
+//{
+//    var uri = new Uri(connectionString.Split('?')[0]); // Remove query string
+//    var userInfo = uri.UserInfo.Split(':');
+//    var username = Uri.UnescapeDataString(userInfo[0]);
+//    var password = Uri.UnescapeDataString(userInfo[1]);
+//    connectionString = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={username};Password={password};SSL Mode=Require;Trust Server Certificate=true";
+//}
 
  
 
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(connectionString));
+//builder.Services.AddDbContext<AppDbContext>(options =>
+//    options.UseNpgsql(connectionString));
 
 builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
 {
