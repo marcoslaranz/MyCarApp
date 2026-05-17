@@ -11,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
-var connectionString = Environment.GetEnvironmentVariable("NPGSQL_CONNECTION")
+var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING")
     ?? Environment.GetEnvironmentVariable("DATABASE_URL")
     ?? builder.Configuration.GetConnectionString("DefaultConnection");
 
@@ -25,7 +25,7 @@ if (connectionString!.StartsWith("postgresql://") || connectionString.StartsWith
     connectionString = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={username};Password={password};SSL Mode=Require;Trust Server Certificate=true";
 }
 
-  
+ 
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
