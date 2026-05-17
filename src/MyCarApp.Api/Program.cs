@@ -15,21 +15,18 @@ var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING"
     ?? Environment.GetEnvironmentVariable("DATABASE_URL")
     ?? builder.Configuration.GetConnectionString("DefaultConnection");
 
-
 // Temporary debug
 Console.WriteLine($"DEBUG - Using connection: Host={connectionString?.Split(';').FirstOrDefault(s => s.StartsWith("Host"))}; Username={connectionString?.Split(';').FirstOrDefault(s => s.StartsWith("Username"))}");
 
-
-// Only convert if it's a URL format
+// Convert postgres:// URL format to Npgsql format
 if (connectionString!.StartsWith("postgresql://") || connectionString.StartsWith("postgres://"))
 {
-    var uri = new Uri(connectionString.Split('?')[0]);
-    var colonIndex = uri.UserInfo.IndexOf(':');
-    var username = Uri.UnescapeDataString(uri.UserInfo[..colonIndex]);
-    var password = Uri.UnescapeDataString(uri.UserInfo[(colonIndex + 1)..]);
+    var uri = new Uri(connectionString.Split('?')[0]); // Remove query string
+    var userInfo = uri.UserInfo.Split(':');
+    var username = Uri.UnescapeDataString(userInfo[0]);
+    var password = Uri.UnescapeDataString(userInfo[1]);
     connectionString = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={username};Password={password};SSL Mode=Require;Trust Server Certificate=true";
 }
-
 
  
 
