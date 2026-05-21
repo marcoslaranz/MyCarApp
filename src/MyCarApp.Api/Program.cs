@@ -6,6 +6,9 @@ using System.Text;
 using MyCarApp.Api.Data;
 using CloudinaryDotNet;
 using Npgsql; // add at top
+using System.Security.Cryptography;
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -82,6 +85,33 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 var csb2 = new NpgsqlConnectionStringBuilder(connectionString);
 Console.WriteLine($"DB: host={csb2.Host} port={csb2.Port} db={csb2.Database} user={csb2.Username} ssl={csb2.SslMode}");
+
+
+var raw = Environment.GetEnvironmentVariable("DATABASE_URL");
+if (string.IsNullOrWhiteSpace(raw))
+{
+    throw new Exception("DATABASE_URL is missing in Render env vars.");
+}
+
+var csb = new NpgsqlConnectionStringBuilder(raw);
+Console.WriteLine($"DB connect: host={csb.Host} port={csb.Port} db={csb.Database} user={csb.Username} ssl={csb.SslMode}");
+
+
+
+
+
+static string Sha256Hex(string s)
+{
+    using var sha = SHA256.Create();
+    return Convert.ToHexString(sha.ComputeHash(Encoding.UTF8.GetBytes(s)));
+}
+
+var raw = Environment.GetEnvironmentVariable("DATABASE_URL")!;
+var csb = new NpgsqlConnectionStringBuilder(raw);
+
+// csb.Password exists only after parsing:
+Console.WriteLine($"DB password hash: {Sha256Hex(csb.Password)}");
+
 
 
 
