@@ -17,8 +17,8 @@ AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 
 
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+//builder.Services.AddDbContext<AppDbContext>(options =>
+//    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Temporary debug
 //Console.WriteLine($"DEBUG - Using connection: Host={connectionString?.Split(';').FirstOrDefault(s => s.StartsWith("Host"))}; Username={connectionString?.Split(';').FirstOrDefault(s => s.StartsWith("Username"))}");
@@ -38,6 +38,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 //builder.Services.AddDbContext<AppDbContext>(options =>
 //    options.UseNpgsql(connectionString));
 
+/*
+
 builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
 {
     options.MultipartBodyLengthLimit = 10 * 1024 * 1024; // 10MB
@@ -53,6 +55,36 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 })
 .AddEntityFrameworkStores<AppDbContext>()
 .AddDefaultTokenProviders();
+*/
+
+
+
+
+
+
+
+
+
+var connectionString =
+    Environment.GetEnvironmentVariable("DATABASE_URL") ??
+    builder.Configuration.GetConnectionString("DefaultConnection");
+
+if (connectionString!.StartsWith("postgresql://") || connectionString.StartsWith("postgres://"))
+{
+    var csb = new NpgsqlConnectionStringBuilder(connectionString);
+    csb.SslMode = SslMode.Require; // Supabase needs TLS
+    connectionString = csb.ConnectionString;
+}
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(connectionString));
+
+
+var csb2 = new NpgsqlConnectionStringBuilder(connectionString);
+Console.WriteLine($"DB: host={csb2.Host} port={csb2.Port} db={csb2.Database} user={csb2.Username} ssl={csb2.SslMode}");
+
+
+
 
 // JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
