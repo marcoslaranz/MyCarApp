@@ -14,4 +14,6 @@ public class LogEntry
     public decimal? FuelPricePerLiter { get; set; }
     public decimal? FuelTotalPaid { get; set; }
     public string? PetrolStationName { get; set; }
+    public int? ImportBatchId { get; set; }
+    public ImportBatch? ImportBatch { get; set; }
 }

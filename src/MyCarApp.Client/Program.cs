@@ -22,6 +22,8 @@ builder.Services.AddScoped(sp =>
     return new HttpClient { BaseAddress = new Uri(apiUrl) };
 });
 
+
+builder.Services.AddScoped<ImportService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<VehicleService>();
 builder.Services.AddScoped<LogEntryService>();

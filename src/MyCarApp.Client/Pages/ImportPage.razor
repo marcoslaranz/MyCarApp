@@ -1,0 +1,150 @@
+@page "/vehicles/{Id:int}/import"
+@inject VehicleService VehicleService
+@inject ImportService ImportService
+@inject NavigationManager Nav
+
+<h3>Import Logs</h3>
+
+@if (vehicle == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <p>@vehicle.Year @vehicle.Make @vehicle.Model — @vehicle.Name</p>
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <p style="color:red">@errorMessage</p>
+    }
+
+    @if (!string.IsNullOrEmpty(successMessage))
+    {
+        <p style="color:#2e7d32; font-weight:700;">@successMessage</p>
+    }
+
+    @if (!importing)
+    {
+        <div style="margin-bottom:0.85rem;">
+            <label style="display:block; margin-bottom:0.4rem;">Select CSV File</label>
+            <InputFile OnChange="HandleFileSelected" accept=".csv"
+                       style="font-size:1rem;" />
+        </div>
+
+        @if (selectedFile != null)
+        {
+            <p style="color:#555; font-size:0.85rem;">
+                Selected: @selectedFile.Name (@((selectedFile.Size / 1024.0).ToString("F1")) KB)
+            </p>
+        }
+
+        <button @onclick="HandleImport"
+                disabled="@(selectedFile == null)">
+            ⬆ Import
+        </button>
+        <button class="btn-secondary" @onclick="GoBack">Cancel</button>
+    }
+    else
+    {
+        <p style="color:#555;">Importing, please wait...</p>
+    }
+
+    @if (lastBatch != null && string.IsNullOrEmpty(successMessage))
+    {
+        <div style="margin-top:2rem; padding:1rem;
+                    border:1px solid #c8e6c9; border-radius:8px;
+                    background:#f1f8f1;">
+            <p style="margin:0 0 0.5rem 0; font-size:0.85rem; color:#555;">
+                Last import: <strong>@lastBatch.FileName</strong>
+                (@lastBatch.RowCount records on @lastBatch.ImportedAt.ToLocalTime().ToString("dd MMM yyyy 'at' h:mmtt"))
+            </p>
+            <button class="btn-secondary" @onclick="HandleUndo"
+                    disabled="@undoing">
+                @(undoing ? "Undoing..." : "↩ Undo Last Import")
+            </button>
+        </div>
+    }
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    private Vehicle? vehicle;
+    private IBrowserFile? selectedFile;
+    private ImportBatch? lastBatch;
+
+    private bool importing = false;
+    private bool undoing = false;
+    private string errorMessage = string.Empty;
+    private string successMessage = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var vehicles = await VehicleService.GetVehiclesAsync();
+        vehicle = vehicles.FirstOrDefault(v => v.Id == Id);
+        lastBatch = await ImportService.GetLastImportAsync(Id);
+    }
+
+    private void HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        errorMessage = string.Empty;
+        successMessage = string.Empty;
+        selectedFile = e.File;
+    }
+
+    private async Task HandleImport()
+    {
+        if (selectedFile == null) return;
+
+        errorMessage = string.Empty;
+        successMessage = string.Empty;
+        importing = true;
+
+        try
+        {
+            // 10MB max file size
+            await using var stream = selectedFile.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024);
+            var (success, message) = await ImportService.ImportAsync(Id, stream, selectedFile.Name);
+
+            if (success)
+            {
+                successMessage = message;
+                selectedFile = null;
+                lastBatch = await ImportService.GetLastImportAsync(Id);
+            }
+            else
+            {
+                errorMessage = message;
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Import failed: {ex.Message}";
+        }
+
+        importing = false;
+    }
+
+    private async Task HandleUndo()
+    {
+        undoing = true;
+        errorMessage = string.Empty;
+        successMessage = string.Empty;
+
+        var (success, message) = await ImportService.UndoLastImportAsync(Id);
+
+        if (success)
+        {
+            successMessage = message;
+            lastBatch = null;
+        }
+        else
+        {
+            errorMessage = message;
+        }
+
+        undoing = false;
+    }
+
+    private void GoBack() => Nav.NavigateTo($"vehicles/{Id}");
+}

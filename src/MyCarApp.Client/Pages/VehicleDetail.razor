@@ -29,6 +29,7 @@ else
     <button @onclick="GoToAddLog">+ Add Log Entry</button>
     <button @onclick="StartEdit">Edit Vehicle</button>
     <button @onclick="GoToExport">📤 Export</button>
+    <button @onclick="GoToImport">📥 Import</button>
     <button @onclick="GoToService">🔧 Service</button>
     <button @onclick="GoToServiceLog">🔧 Log Service</button>
     <button @onclick="GoToServiceHistory">📋 Service History</button>
@@ -277,6 +278,7 @@ else
 
     private void GoToExport() => Nav.NavigateTo($"vehicles/{Id}/export");
 
+    private void GoToImport() => Nav.NavigateTo($"vehicles/{Id}/import");
     protected override async Task OnInitializedAsync()
     {
         vehicle = (await VehicleService.GetVehiclesAsync()).FirstOrDefault(v => v.Id == Id);

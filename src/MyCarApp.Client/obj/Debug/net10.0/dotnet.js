@@ -5,7 +5,7 @@ var e=!1;const t=async()=>WebAssembly.validate(new Uint8Array([0,97,115,109,1,0,
   "mainAssemblyName": "MyCarApp.Client",
   "applicationEnvironment": "Development",
   "resources": {
-    "hash": "sha256-a5xb/823TnltoESJEZdSVbGzCmRFhYrsfRxhSxvP7S8=",
+    "hash": "sha256-+jrU2bo3CyMNC2TesLNVTAeMX2RuH8enUf1iZ8llg1E=",
     "jsModuleNative": [
       {
         "name": "dotnet.native.rjbmzc4jpg.js"
@@ -108,8 +108,8 @@ var e=!1;const t=async()=>WebAssembly.validate(new Uint8Array([0,97,115,109,1,0,
       },
       {
         "virtualPath": "Microsoft.DotNet.HotReload.WebAssembly.Browser.wasm",
-        "name": "Microsoft.DotNet.HotReload.WebAssembly.Browser.v5huyml5sc.wasm",
-        "hash": "sha256-nUOp/kC3zVe2D4ay6RHxrSXcFPp/ckiVhdpJ76khAVE=",
+        "name": "Microsoft.DotNet.HotReload.WebAssembly.Browser.o2d6np5ecs.wasm",
+        "hash": "sha256-UC0FpdVIZA2+JVtbJyLMM4h2NhR1Tz4Adu+daVOOR70=",
         "cache": "force-cache"
       },
       {
@@ -1254,16 +1254,16 @@ var e=!1;const t=async()=>WebAssembly.validate(new Uint8Array([0,97,115,109,1,0,
       },
       {
         "virtualPath": "MyCarApp.Client.wasm",
-        "name": "MyCarApp.Client.nh6230l3sw.wasm",
-        "hash": "sha256-W4ChzLUMrfNgnbQUrUtUA/PnB8RKI3C5Wuf2Lgzbqdg=",
+        "name": "MyCarApp.Client.9c6mxcuity.wasm",
+        "hash": "sha256-Z2V5K/R2hQWxdCEPqjtLBNqevLqj5e5KQJwuo9Ujt28=",
         "cache": "force-cache"
       }
     ],
     "pdb": [
       {
         "virtualPath": "MyCarApp.Client.pdb",
-        "name": "MyCarApp.Client.amciylfwep.pdb",
-        "hash": "sha256-YtZPZ/qlxGw2ksUXbz7Zn6c/bNgoj4+vXhXhllXzl0M=",
+        "name": "MyCarApp.Client.9frpd5975x.pdb",
+        "hash": "sha256-6/emfBYkIKWWDA7093ct2LbbkkZMiDOvpzuKWZcKF/I=",
         "cache": "force-cache"
       }
     ],

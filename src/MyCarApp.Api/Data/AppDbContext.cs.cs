@@ -10,11 +10,11 @@ public class AppDbContext : IdentityDbContext
     {
     }
 
+    // Add this DbSet with the others
+    public DbSet<ImportBatch> ImportBatches { get; set; }
     public DbSet<ServiceItem> ServiceItems { get; set; }
-
     public DbSet<Vehicle> Vehicles { get; set; }
     public DbSet<LogEntry> LogEntries { get; set; }
-
     public DbSet<ServiceLog> ServiceLogs { get; set; }
     public DbSet<ServiceLogItem> ServiceLogItems { get; set; }
     public DbSet<ServiceDocument> ServiceDocuments { get; set; }
@@ -54,7 +54,21 @@ public class AppDbContext : IdentityDbContext
             .Property(l => l.FuelTotalPaid)
             .HasPrecision(10, 2);
 
-            // ServiceItem belongs to a Vehicle
+        // ImportBatch belongs to a Vehicle
+        builder.Entity<ImportBatch>()
+            .HasOne(b => b.Vehicle)
+            .WithMany()
+            .HasForeignKey(b => b.VehicleId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // LogEntry optionally belongs to an ImportBatch
+        builder.Entity<LogEntry>()
+            .HasOne(l => l.ImportBatch)
+            .WithMany(b => b.LogEntries)
+            .HasForeignKey(l => l.ImportBatchId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        // ServiceItem belongs to a Vehicle
         builder.Entity<ServiceItem>()
             .HasOne<Vehicle>()
             .WithMany()
@@ -97,6 +111,6 @@ public class AppDbContext : IdentityDbContext
             .WithMany(s => s.ServiceDocuments)
             .HasForeignKey(s => s.ServiceLogId)
             .OnDelete(DeleteBehavior.Cascade);
-            
+
     }
 }

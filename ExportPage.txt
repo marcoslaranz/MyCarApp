@@ -1,0 +1,181 @@
+@page "/vehicles/{Id:int}/export"
+@inject VehicleService VehicleService
+@inject LogEntryService LogService
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+
+<h3>Export Logs</h3>
+
+@if (vehicle == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <p>@vehicle.Year @vehicle.Make @vehicle.Model — @vehicle.Name</p>
+
+    <div>
+        <label>Format</label>
+        <div style="display:flex; gap:1rem; margin-bottom:0.85rem;">
+            <label style="display:flex; align-items:center; gap:0.5rem; text-transform:none; font-size:1rem;">
+                <input type="radio" name="format" value="csv"
+                       checked="@(selectedFormat == "csv")"
+                       @onchange='() => selectedFormat = "csv"' />
+                CSV
+            </label>
+            <label style="display:flex; align-items:center; gap:0.5rem; text-transform:none; font-size:1rem;">
+                <input type="radio" name="format" value="xlsx"
+                       checked="@(selectedFormat == "xlsx")"
+                       @onchange='() => selectedFormat = "xlsx"' />
+                Excel (.xlsx)
+            </label>
+        </div>
+    </div>
+
+    <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.85rem;">
+        <input @bind="filterByDate" type="checkbox" id="filterDate" />
+        <label for="filterDate" style="margin:0; text-transform:none; font-size:1rem;">Filter by date range</label>
+    </div>
+
+    @if (filterByDate)
+    {
+        <div>
+            <label>From</label>
+            <input @bind="fromDate" type="date" class="input-short" />
+        </div>
+        <div>
+            <label>To</label>
+            <input @bind="toDate" type="date" class="input-short" />
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <p style="color:red">@errorMessage</p>
+    }
+
+    @if (!string.IsNullOrEmpty(successMessage))
+    {
+        <p style="color:#2e7d32; font-weight:700;">@successMessage</p>
+    }
+
+    <p style="color:#555; font-size:0.85rem;">@RecordCount record(s) will be exported.</p>
+
+    <button @onclick="HandleExport" disabled="@exporting">
+        @(exporting ? "Exporting..." : "⬇ Export")
+    </button>
+    <button class="btn-secondary" @onclick="GoBack">Cancel</button>
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    private Vehicle? vehicle;
+    private List<LogEntry> logs = new();
+
+    private string selectedFormat = "csv";
+    private bool filterByDate = false;
+    private DateTime fromDate = DateTime.Today.AddMonths(-1);
+    private DateTime toDate = DateTime.Today;
+    private bool exporting = false;
+    private string errorMessage = string.Empty;
+    private string successMessage = string.Empty;
+
+    private List<LogEntry> FilteredLogs => filterByDate
+        ? logs.Where(l => l.DateTime.Date >= fromDate.Date && l.DateTime.Date <= toDate.Date).ToList()
+        : logs;
+
+    private int RecordCount => FilteredLogs.Count;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var vehicles = await VehicleService.GetVehiclesAsync();
+        vehicle = vehicles.FirstOrDefault(v => v.Id == Id);
+        logs = await LogService.GetLogsAsync(Id);
+    }
+
+    private async Task HandleExport()
+    {
+        errorMessage = string.Empty;
+        successMessage = string.Empty;
+        exporting = true;
+
+        if (!FilteredLogs.Any())
+        {
+            errorMessage = "No records found for the selected range.";
+            exporting = false;
+            return;
+        }
+
+        try
+        {
+            var fileName = $"{vehicle?.Name}_{DateTime.Today:yyyy-MM-dd}.{selectedFormat}";
+
+            if (selectedFormat == "csv")
+                await ExportCsv(fileName);
+            else
+                await ExportXlsx(fileName);
+
+            successMessage = $"✅ {RecordCount} records exported successfully!";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Export failed: {ex.Message}";
+        }
+
+        exporting = false;
+    }
+
+    private async Task ExportCsv(string fileName)
+    {
+        var sb = new System.Text.StringBuilder();
+
+        // Header
+        sb.AppendLine("Date,Time,OdometerKm,FuelLoaded,FuelLiters,FuelPricePerLiter,FuelTotalPaid,PetrolStationName");
+
+        // Rows
+        foreach (var log in FilteredLogs.OrderBy(l => l.DateTime))
+        {
+            sb.AppendLine(string.Join(",",
+                log.DateTime.ToString("dd/MM/yyyy"),
+                log.DateTime.ToString("HH:mm"),
+                log.OdometerKm,
+                log.FuelLoaded ? "Yes" : "No",
+                log.FuelLiters?.ToString() ?? "",
+                log.FuelPricePerLiter?.ToString() ?? "",
+                log.FuelTotalPaid?.ToString() ?? "",
+                $"\"{log.PetrolStationName ?? ""}\""
+            ));
+        }
+
+        await JS.InvokeVoidAsync("downloadFile", fileName, "text/csv", sb.ToString());
+    }
+
+    private async Task ExportXlsx(string fileName)
+    {
+        var rows = new List<object[]>();
+
+        // Header row
+        rows.Add(new object[] { "Date", "Time", "OdometerKm", "FuelLoaded", "FuelLiters", "FuelPricePerLiter", "FuelTotalPaid", "PetrolStationName" });
+
+        // Data rows
+        foreach (var log in FilteredLogs.OrderBy(l => l.DateTime))
+        {
+            rows.Add(new object[]
+            {
+                log.DateTime.ToString("dd/MM/yyyy"),
+                log.DateTime.ToString("HH:mm"),
+                (double)log.OdometerKm,
+                log.FuelLoaded ? "Yes" : "No",
+                log.FuelLiters.HasValue ? (object)(double)log.FuelLiters.Value : "",
+                log.FuelPricePerLiter.HasValue ? (object)(double)log.FuelPricePerLiter.Value : "",
+                log.FuelTotalPaid.HasValue ? (object)(double)log.FuelTotalPaid.Value : "",
+                log.PetrolStationName ?? ""
+            });
+        }
+
+        await JS.InvokeVoidAsync("downloadXlsx", fileName, rows);
+    }
+
+    private void GoBack() => Nav.NavigateTo($"vehicles/{Id}");
+}
