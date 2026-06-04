@@ -11,31 +11,65 @@ var builder = WebApplication.CreateBuilder(args);
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
-var connectionString =
-    Environment.GetEnvironmentVariable("DATABASE_URL") ??
-    builder.Configuration.GetConnectionString("DefaultConnection");
+var rawConn = Environment.GetEnvironmentVariable("DATABASE_URL")
+    ?? builder.Configuration.GetConnectionString("DefaultConnection");
 
+if (string.IsNullOrWhiteSpace(rawConn))
+    throw new InvalidOperationException("Database connection string is not configured. Set DATABASE_URL or ConnectionStrings:DefaultConnection.");
 
-/*
-if (connectionString!.StartsWith("postgresql://") || connectionString.StartsWith("postgres://"))
+string connectionString;
+// Support DATABASE_URL style URIs (postgres://user:pass@host:port/db)
+if (rawConn.StartsWith("postgres://", StringComparison.OrdinalIgnoreCase) ||
+    rawConn.StartsWith("postgresql://", StringComparison.OrdinalIgnoreCase))
 {
-    var csb = new NpgsqlConnectionStringBuilder(connectionString);
-    csb.SslMode = SslMode.Require;
+    var uri = new Uri(rawConn);
+    var userInfo = uri.UserInfo.Split(':');
+    var csb = new NpgsqlConnectionStringBuilder
+    {
+        Host = uri.Host,
+        Port = uri.Port > 0 ? uri.Port : 5432,
+        Database = uri.AbsolutePath.TrimStart('/'),
+        Username = Uri.UnescapeDataString(userInfo[0]),
+        Password = userInfo.Length > 1 ? Uri.UnescapeDataString(userInfo[1]) : string.Empty,
+        SslMode = SslMode.Require,
+        TrustServerCertificate = true
+    };
+
+    // Supabase pooler uses port 6543 and is incompatible with pooling for EF Core
+    if (csb.Port == 6543)
+    {
+        csb.Pooling = false;
+    }
+
+    // Increase command timeout to reduce transient read timeouts
+    csb.CommandTimeout = 60; // seconds
+
     connectionString = csb.ConnectionString;
 }
-*/
-if (connectionString!.StartsWith("postgresql://") || connectionString.StartsWith("postgres://"))
+else
 {
-    var uri = new Uri(connectionString);
-    var userInfo = uri.UserInfo.Split(':');
-    connectionString = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
+    // Use NpgsqlConnectionStringBuilder to ensure SSL and sensible defaults
+    var csb = new NpgsqlConnectionStringBuilder(rawConn)
+    {
+        SslMode = SslMode.Require,
+        TrustServerCertificate = true
+    };
+
+    if (csb.Port == 6543)
+        csb.Pooling = false;
+
+    if (csb.CommandTimeout < 30)
+        csb.CommandTimeout = 60;
+
+    connectionString = csb.ConnectionString;
 }
 
-
-
-
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseNpgsql(connectionString, npgsqlOptions =>
+    {
+        // Optional: enable retry on failure for transient errors
+        npgsqlOptions.EnableRetryOnFailure(maxRetryCount: 3, maxRetryDelay: TimeSpan.FromSeconds(5), errorCodesToAdd: null);
+    }));
 
 
 // Identity
