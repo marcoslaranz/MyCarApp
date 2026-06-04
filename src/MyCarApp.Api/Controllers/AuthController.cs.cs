@@ -58,7 +58,20 @@ public class AuthController : ControllerBase
     private string GenerateJwtToken(IdentityUser user)
     {
         var jwtSettings = _configuration.GetSection("JwtSettings");
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]!));
+        var secretKey = Environment.GetEnvironmentVariable("JWT_SECRET")
+            ?? jwtSettings["SecretKey"]
+            ?? throw new InvalidOperationException("JWT secret is not configured. Set JWT_SECRET or JwtSettings:SecretKey.");
+        var issuer = Environment.GetEnvironmentVariable("JWT_ISSUER")
+            ?? jwtSettings["Issuer"]
+            ?? throw new InvalidOperationException("JWT issuer is not configured. Set JWT_ISSUER or JwtSettings:Issuer.");
+        var audience = Environment.GetEnvironmentVariable("JWT_AUDIENCE")
+            ?? jwtSettings["Audience"]
+            ?? throw new InvalidOperationException("JWT audience is not configured. Set JWT_AUDIENCE or JwtSettings:Audience.");
+        var expiryInDaysText = Environment.GetEnvironmentVariable("JWT_EXPIRY_IN_DAYS")
+            ?? jwtSettings["ExpiryInDays"]
+            ?? "7";
+
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var claims = new[]
@@ -69,10 +82,10 @@ public class AuthController : ControllerBase
         };
 
         var token = new JwtSecurityToken(
-            issuer: jwtSettings["Issuer"],
-            audience: jwtSettings["Audience"],
+            issuer: issuer,
+            audience: audience,
             claims: claims,
-            expires: DateTime.UtcNow.AddDays(Convert.ToDouble(jwtSettings["ExpiryInDays"])),
+            expires: DateTime.UtcNow.AddDays(Convert.ToDouble(expiryInDaysText)),
             signingCredentials: creds
         );
 

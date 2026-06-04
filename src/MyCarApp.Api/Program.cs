@@ -50,7 +50,15 @@ builder.Services.AddScoped<SignInManager<IdentityUser>>();
 
 // JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-var secretKey = jwtSettings["SecretKey"]!;
+var jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET")
+    ?? jwtSettings["SecretKey"]
+    ?? throw new InvalidOperationException("JWT secret is not configured. Set JWT_SECRET or JwtSettings:SecretKey.");
+var jwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER")
+    ?? jwtSettings["Issuer"]
+    ?? throw new InvalidOperationException("JWT issuer is not configured. Set JWT_ISSUER or JwtSettings:Issuer.");
+var jwtAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE")
+    ?? jwtSettings["Audience"]
+    ?? throw new InvalidOperationException("JWT audience is not configured. Set JWT_AUDIENCE or JwtSettings:Audience.");
 
 builder.Services.AddAuthentication(options =>
 {
@@ -65,9 +73,9 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        ValidIssuer = jwtSettings["Issuer"],
-        ValidAudience = jwtSettings["Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
+        ValidIssuer = jwtIssuer,
+        ValidAudience = jwtAudience,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret))
     };
 });
 
@@ -92,10 +100,20 @@ builder.Services.AddCors(options =>
 
 // Cloudinary
 var cloudinarySettings = builder.Configuration.GetSection("Cloudinary");
+var cloudName = Environment.GetEnvironmentVariable("CLOUDINARY_CLOUD_NAME")
+    ?? cloudinarySettings["CloudName"]
+    ?? throw new InvalidOperationException("Cloudinary cloud name is not configured. Set CLOUDINARY_CLOUD_NAME or Cloudinary:CloudName.");
+var cloudinaryApiKey = Environment.GetEnvironmentVariable("CLOUDINARY_API_KEY")
+    ?? cloudinarySettings["ApiKey"]
+    ?? throw new InvalidOperationException("Cloudinary API key is not configured. Set CLOUDINARY_API_KEY or Cloudinary:ApiKey.");
+var cloudinaryApiSecret = Environment.GetEnvironmentVariable("CLOUDINARY_API_SECRET")
+    ?? cloudinarySettings["ApiSecret"]
+    ?? throw new InvalidOperationException("Cloudinary API secret is not configured. Set CLOUDINARY_API_SECRET or Cloudinary:ApiSecret.");
+
 var cloudinary = new CloudinaryDotNet.Cloudinary(new CloudinaryDotNet.Account(
-    cloudinarySettings["CloudName"],
-    cloudinarySettings["ApiKey"],
-    cloudinarySettings["ApiSecret"]
+    cloudName,
+    cloudinaryApiKey,
+    cloudinaryApiSecret
 ));
 cloudinary.Api.Secure = true;
 builder.Services.AddSingleton(cloudinary);

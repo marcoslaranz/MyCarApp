@@ -5,6 +5,7 @@
 
 # User secrets
 **/appsettings.Development.json
+.env
 
 # Docker volumes
 postgres_data/
