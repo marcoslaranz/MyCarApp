@@ -14,6 +14,9 @@ AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL")
     ?? builder.Configuration.GetConnectionString("DefaultConnection");
 
+Console.WriteLine($"DEBUG: DATABASE_URL = {Environment.GetEnvironmentVariable("DATABASE_URL")}");
+Console.WriteLine($"DEBUG: Final connection string = {connectionString}");
+
 if (connectionString!.StartsWith("postgresql://") || connectionString.StartsWith("postgres://"))
 {
     var csb = new NpgsqlConnectionStringBuilder(connectionString);
