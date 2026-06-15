@@ -26,8 +26,8 @@ if (connectionString!.StartsWith("postgresql://") || connectionString.StartsWith
         Username = uri.UserInfo.Split(':')[0],
         Password = uri.UserInfo.Split(':')[1],
         SslMode = SslMode.Require,
-        Timeout = 30,
-        CommandTimeout = 30
+        Timeout = 60,
+        CommandTimeout = 60
     };
     connectionString = csb.ConnectionString;
 }
@@ -36,8 +36,8 @@ else
     var csb = new NpgsqlConnectionStringBuilder(connectionString)
     {
         SslMode = SslMode.Require,
-        Timeout = 30,
-        CommandTimeout = 30
+        Timeout = 60,
+        CommandTimeout = 60
     };
     connectionString = csb.ConnectionString;
 }
