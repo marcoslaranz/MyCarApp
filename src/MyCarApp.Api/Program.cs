@@ -15,17 +15,31 @@ var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL")
     ?? builder.Configuration.GetConnectionString("DefaultConnection");
 
 Console.WriteLine($"DEBUG: DATABASE_URL = {Environment.GetEnvironmentVariable("DATABASE_URL")}");
-Console.WriteLine($"DEBUG: Final connection string = {connectionString}");
+Console.WriteLine($"DEBUG: Initial connection string = {connectionString}");
 
+// Convert PostgreSQL URI to standard connection string if needed
 if (connectionString!.StartsWith("postgresql://") || connectionString.StartsWith("postgres://"))
 {
-    var csb = new NpgsqlConnectionStringBuilder(connectionString);
-
-    // Supabase requires SSL. Pooler uses TLS as well.
-    csb.SslMode = SslMode.Require;
-
+    var uri = new Uri(connectionString);
+    var csb = new NpgsqlConnectionStringBuilder
+    {
+        Host = uri.Host,
+        Port = uri.Port == -1 ? 5432 : uri.Port,
+        Database = uri.AbsolutePath.TrimStart('/'),
+        Username = uri.UserInfo.Split(':')[0],
+        Password = uri.UserInfo.Split(':')[1],
+        SslMode = SslMode.Require
+    };
     connectionString = csb.ConnectionString;
 }
+else
+{
+    var csb = new NpgsqlConnectionStringBuilder(connectionString);
+    csb.SslMode = SslMode.Require;
+    connectionString = csb.ConnectionString;
+}
+
+Console.WriteLine($"DEBUG: Final connection string = {connectionString}");
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
