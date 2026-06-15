@@ -14,9 +14,6 @@ AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL")
     ?? builder.Configuration.GetConnectionString("DefaultConnection");
 
-Console.WriteLine($"DEBUG: DATABASE_URL = {Environment.GetEnvironmentVariable("DATABASE_URL")}");
-Console.WriteLine($"DEBUG: Initial connection string = {connectionString}");
-
 // Convert PostgreSQL URI to standard connection string if needed
 if (connectionString!.StartsWith("postgresql://") || connectionString.StartsWith("postgres://"))
 {
@@ -28,14 +25,20 @@ if (connectionString!.StartsWith("postgresql://") || connectionString.StartsWith
         Database = uri.AbsolutePath.TrimStart('/'),
         Username = uri.UserInfo.Split(':')[0],
         Password = uri.UserInfo.Split(':')[1],
-        SslMode = SslMode.Require
+        SslMode = SslMode.Require,
+        Timeout = 30,
+        CommandTimeout = 30
     };
     connectionString = csb.ConnectionString;
 }
 else
 {
-    var csb = new NpgsqlConnectionStringBuilder(connectionString);
-    csb.SslMode = SslMode.Require;
+    var csb = new NpgsqlConnectionStringBuilder(connectionString)
+    {
+        SslMode = SslMode.Require,
+        Timeout = 30,
+        CommandTimeout = 30
+    };
     connectionString = csb.ConnectionString;
 }
 
