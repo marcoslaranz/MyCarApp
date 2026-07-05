@@ -35,10 +35,15 @@ if (rawConn.StartsWith("postgres://", StringComparison.OrdinalIgnoreCase) ||
         TrustServerCertificate = true
     };
 
-    // Supabase pooler uses port 6543 and is incompatible with pooling for EF Core
+    // Supabase pooler (port 6543) runs PgBouncer in transaction mode, which doesn't
+    // preserve session state (like prepared statements) between transactions on the
+    // same physical connection. Disable statement caching to be compatible with that —
+    // but KEEP Npgsql's own client-side connection pooling enabled (Pooling=true is the
+    // default), since disabling it forces a brand new TCP+TLS connection for every single
+    // command, which is slow and can queue for minutes under any backpressure.
     if (csb.Port == 6543)
     {
-        csb.Pooling = false;
+        csb.MaxAutoPrepare = 0;
     }
 
     // Increase command timeout to reduce transient read timeouts
@@ -56,7 +61,7 @@ else
     };
 
     if (csb.Port == 6543)
-        csb.Pooling = false;
+        csb.MaxAutoPrepare = 0;
 
     if (csb.CommandTimeout < 30)
         csb.CommandTimeout = 60;
