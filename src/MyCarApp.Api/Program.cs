@@ -111,6 +111,20 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = jwtAudience,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret))
     };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnAuthenticationFailed = context =>
+        {
+            Console.WriteLine($"JWT AUTH FAILED: {context.Exception.GetType().Name} - {context.Exception.Message}");
+            return Task.CompletedTask;
+        },
+        OnChallenge = context =>
+        {
+            Console.WriteLine($"JWT CHALLENGE: error={context.Error}, description={context.ErrorDescription}");
+            return Task.CompletedTask;
+        }
+    };
 });
 
 builder.Services.AddAuthorization();

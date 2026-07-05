@@ -10,7 +10,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped<NavigationService>();
 
-/*
+
 builder.Services.AddScoped(sp =>
 {
     var navigationManager = sp.GetRequiredService<NavigationManager>();
@@ -22,17 +22,6 @@ builder.Services.AddScoped(sp =>
 
     return new HttpClient { BaseAddress = new Uri(apiUrl) };
 });
-*/
-
-
-builder.Services.AddScoped(sp =>
-{
-    return new HttpClient
-    {
-        BaseAddress = new Uri("https://mycarapp-api.onrender.com/")
-    };
-});
-
 
 
 builder.Services.AddScoped<ImportService>();
