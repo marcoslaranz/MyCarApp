@@ -20,6 +20,13 @@ public class VehicleService
         var token = await _auth.GetTokenAsync();
         _http.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue("Bearer", token);
+
+
+
+
+        Console.WriteLine("TOKEN SENT TO API:");
+        Console.WriteLine(token);
+
     }
 
     public async Task<List<Vehicle>> GetVehiclesAsync()
