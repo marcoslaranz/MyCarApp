@@ -18,7 +18,7 @@ builder.Services.AddScoped(sp =>
 
     var apiUrl = baseUri.Host.Contains("localhost") || baseUri.Host.Contains("192.168")
         ? $"{baseUri.Scheme}://{baseUri.Host}:5236/"
-        : "https://mycarapp-api.onrender.com/";
+        : "https://foam-rotunda-hardy.ngrok-free.dev";
 
     return new HttpClient { BaseAddress = new Uri(apiUrl) };
 });
